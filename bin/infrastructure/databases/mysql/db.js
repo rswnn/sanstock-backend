@@ -3,13 +3,13 @@ const wrapper = require('../../../helpers/utils/wrapper');
 const pool = require('./connection');
 
 class DB {
-  constructor(config) {
+  constructor (config) {
     this.config = config;
   }
 
-  async query(statement) {
+  async query (statement) {
     let db = await pool.getConnection(this.config);
-    if(validate.isEmpty(db)){
+    if (validate.isEmpty(db)) {
       db = await pool.createConnectionPool(this.config);
     }
     const recordset = () => {
@@ -28,14 +28,12 @@ class DB {
             }
             connection.release();
             reject(wrapper.error(err.code, errorMessage, 503));
-          }
-          else {
+          } else {
             connection.query(statement, (err, result) => {
               if (err) {
                 connection.release();
                 reject(wrapper.error(err.code, err.message, 503));
-              }
-              else {
+              } else {
                 connection.release();
                 resolve(wrapper.data(result));
               }
@@ -51,7 +49,6 @@ class DB {
     });
     return result;
   }
-
 }
 
 module.exports = DB;

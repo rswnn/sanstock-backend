@@ -4,6 +4,7 @@ const wrapper = require('../helpers/utils/wrapper');
 const basicAuth = require('../auth/basic_auth_helper');
 const corsMiddleware = require('restify-cors-middleware');
 const mysqlConnectionPooling = require('../infrastructure/databases/mysql/connection');
+const userHandler = require('../modules/user/v1/handlers/api_handler');
 
 function AppServer () {
   this.server = restify.createServer({
@@ -41,6 +42,7 @@ function AppServer () {
         Add new route
     ====================
   */
+  this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
 
   mysqlConnectionPooling.init();
 }

@@ -38,5 +38,6 @@ rules: {
 
   # add "falls through" for those
   no-fallthrough: 2,
-  no-control-regex: 0
+  no-control-regex: 0,
+  array-callback-return: 0
 }
