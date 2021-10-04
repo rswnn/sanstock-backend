@@ -3,7 +3,6 @@ const project = require('../../package.json');
 const wrapper = require('../helpers/utils/wrapper');
 const basicAuth = require('../auth/basic_auth_helper');
 const corsMiddleware = require('restify-cors-middleware');
-const sockets = require('../infrastructure/socket.io/connection');
 
 function AppServer () {
   this.server = restify.createServer({
@@ -42,8 +41,6 @@ function AppServer () {
     ====================
   */
  
-
-  sockets.init(this.server);
 }
 
 module.exports = AppServer;

@@ -1,5 +1,5 @@
 {
-  "name": "code-base",
+  "name": "sanstock-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -14,9 +14,6 @@
     "type": "git",
     "url": ""
   },
-  "keywords": [
-    "heroku"
-  ],
   "author": "Yusuf Eko Anggoro",
   "license": "ISC",
   "dependencies": {
@@ -30,7 +27,6 @@
     "pre-commit": "^1.2.2",
     "restify": "^8.5.1",
     "restify-cors-middleware": "^1.1.1",
-    "socket.io": "^4.2.0",
     "uuid": "^8.3.2",
     "validate.js": "^0.13.1",
     "winston": "^2.4.4"
