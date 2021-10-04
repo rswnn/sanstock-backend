@@ -3,6 +3,7 @@ const project = require('../../package.json');
 const wrapper = require('../helpers/utils/wrapper');
 const basicAuth = require('../auth/basic_auth_helper');
 const corsMiddleware = require('restify-cors-middleware');
+const mysqlConnectionPooling = require('../infrastructure/databases/mysql/connection');
 
 function AppServer () {
   this.server = restify.createServer({
@@ -40,7 +41,8 @@ function AppServer () {
         Add new route
     ====================
   */
- 
+
+  mysqlConnectionPooling.init();
 }
 
 module.exports = AppServer;
