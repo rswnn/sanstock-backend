@@ -1,11 +1,11 @@
 const wrapper = require('../../../../../helpers/utils/wrapper');
 const bcrypt = require('bcrypt');
-const queryHandler = require('../queries/query');
+const query = require('../queries/query');
 const jwtAuth = require('../../../../../auth/jwt_auth_helper');
 const { expiredToken } = require('../../utils/constants');
 class User {
   async authenticate (payload) {
-    let findUser = await queryHandler.findUser(payload);
+    let findUser = await query.findUser(payload);
     if (findUser.err) {
       return wrapper.error('err', findUser.message, findUser.code);
     } else if (findUser.data.length === 0) {

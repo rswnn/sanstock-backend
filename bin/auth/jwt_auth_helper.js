@@ -14,7 +14,7 @@ const generateToken = async (payload) => {
     algorithm: 'RS256',
     audience: '97b331dh93-4hil3ff-4e83358-9848124-b3aAsd9b9f72c34',
     issuer: 'sanstock',
-    expiresIn: '100m'
+    expiresIn: '7d'
   };
   const token = jwt.sign(payload, privateKey, verifyOptions);
   return token;
@@ -55,7 +55,7 @@ const verifyToken = async (req, res, next) => {
     return wrapper.response(res, 'fail', result, 'Token is not valid!', ERROR.UNAUTHORIZED);
   }
   const username = decodedToken.sub;
-  const findUser = await userQuery.findUser(username);
+  const findUser = await userQuery.findUser({username});
   if (findUser.err) {
     return wrapper.response(res, 'fail', result, 'Invalid token!', ERROR.FORBIDDEN);
   } else if (findUser.data.length === 0) {

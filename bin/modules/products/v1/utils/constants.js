@@ -1,6 +1,6 @@
 
 const expiredToken = {
-  accessToken: '7d',
+  accessToken: 1800,
   refreshToken: 2592000
 };
 

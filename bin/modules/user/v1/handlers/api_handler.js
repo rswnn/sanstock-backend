@@ -1,6 +1,6 @@
 const wrapper = require('../../../../helpers/utils/wrapper');
 const commandHandler = require('../repositories/commands/command_handler');
-const commandModel = require('../repositories/commands/command_modal');
+const commandModel = require('../repositories/commands/command_model');
 const validator = require('../utils/validator');
 
 const authenticate = async (req, res) => {
