@@ -4,8 +4,8 @@ const helpers = require('../../utils/helpers');
 const moment = require('moment-timezone');
 moment.tz('Asia/Jakarta');
 
-class Merchant {
-  async addMerchant (payload) {
+class Supplier {
+  async addSupplier (payload) {
     const autoCodeGeneration = await helpers.autoCodeGeneration();
     if (autoCodeGeneration.err) {
       return wrapper.error('err', autoCodeGeneration.message, autoCodeGeneration.code);
@@ -13,29 +13,29 @@ class Merchant {
     payload.kode = autoCodeGeneration.data;
     payload.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
-    const insertMerchant = await command.insertMerchant(payload);
-    if (insertMerchant.err) {
-      return wrapper.error('err', insertMerchant.message, insertMerchant.code);
+    const insertSupplier = await command.insertSupplier(payload);
+    if (insertSupplier.err) {
+      return wrapper.error('err', insertSupplier.message, insertSupplier.code);
     }
     return wrapper.data('', 'Success Input', 201);
   }
 
-  async deleteMerchant (payload) {
-    const deleteMerchant = await command.deleteMerchant(payload);
-    if (deleteMerchant.err) {
-      return wrapper.error('err', deleteMerchant.message, deleteMerchant.code);
+  async deleteSupplier (payload) {
+    const deleteSupplier = await command.deleteSupplier(payload);
+    if (deleteSupplier.err) {
+      return wrapper.error('err', deleteSupplier.message, deleteSupplier.code);
     }
     return wrapper.data('', 'Success Delete', 201);
   }
 
-  async updateMerchant (payload) {
+  async updateSupplier (payload) {
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
-    const updateMerchant = await command.updateMerchant(payload);
-    if (updateMerchant.err) {
-      return wrapper.error('err', updateMerchant.message, updateMerchant.code);
+    const updateSupplier = await command.updateSupplier(payload);
+    if (updateSupplier.err) {
+      return wrapper.error('err', updateSupplier.message, updateSupplier.code);
     }
     return wrapper.data('', 'Success Update', 201);
   }
 }
 
-module.exports = Merchant;
+module.exports = Supplier;

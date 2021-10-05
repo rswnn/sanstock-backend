@@ -18,7 +18,6 @@ const updateMerchant = async (payload) => {
   return postCommand(payload);
 };
 
-
 module.exports = {
   addMerchant,
   deleteMerchant,

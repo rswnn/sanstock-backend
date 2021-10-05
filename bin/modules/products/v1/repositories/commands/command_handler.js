@@ -18,7 +18,6 @@ const updateProduct = async (payload) => {
   return postCommand(payload);
 };
 
-
 module.exports = {
   addProduct,
   deleteProduct,

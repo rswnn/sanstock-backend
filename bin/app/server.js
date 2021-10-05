@@ -7,6 +7,7 @@ const mysqlConnectionPooling = require('../infrastructure/databases/mysql/connec
 const userHandler = require('../modules/user/v1/handlers/api_handler');
 const productHandler = require('../modules/products/v1/handlers/api_handler');
 const merchantHandler = require('../modules/merchants/v1/handlers/api_handler');
+const supplierHandler = require('../modules/suppliers/v1/handlers/api_handler');
 const jwtAuth = require('../auth/jwt_auth_helper');
 
 function AppServer () {
@@ -46,6 +47,7 @@ function AppServer () {
     ====================
   */
   this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
+
   this.server.post('/products/v1', jwtAuth.verifyToken, productHandler.addProduct);
   this.server.get('/products/v1', jwtAuth.verifyToken, productHandler.listProduct);
   this.server.del('/products/v1/:id', jwtAuth.verifyToken, productHandler.deleteProduct);
@@ -55,6 +57,11 @@ function AppServer () {
   this.server.get('/merchants/v1', jwtAuth.verifyToken, merchantHandler.listMerchant);
   this.server.del('/merchants/v1/:id', jwtAuth.verifyToken, merchantHandler.deleteMerchant);
   this.server.put('/merchants/v1/:id', jwtAuth.verifyToken, merchantHandler.updateMerchant);
+
+  this.server.post('/suppliers/v1', jwtAuth.verifyToken, supplierHandler.addSupplier);
+  this.server.get('/suppliers/v1', jwtAuth.verifyToken, supplierHandler.listSupplier);
+  this.server.del('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.deleteSupplier);
+  this.server.put('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.updateSupplier);
 
   mysqlConnectionPooling.init();
 }

@@ -1,13 +1,13 @@
 const wrapper = require('../../../../../helpers/utils/wrapper');
 const command = require('../commands/command');
-const moment = require('moment-timezone')
-moment.tz('Asia/Jakarta')
+const moment = require('moment-timezone');
+moment.tz('Asia/Jakarta');
 
 class Product {
   async addProduct (payload) {
-    payload.created_at = moment().format("YYYY-MM-DD HH:mm:ss");
-    payload.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
-    let insertOneProduct = await command.insertOneProduct(payload);
+    payload.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    const insertOneProduct = await command.insertOneProduct(payload);
     if (insertOneProduct.err) {
       return wrapper.error('err', insertOneProduct.message, insertOneProduct.code);
     }
@@ -15,7 +15,7 @@ class Product {
   }
 
   async deleteProduct (payload) {
-    let deleteProduct = await command.deleteProduct(payload);
+    const deleteProduct = await command.deleteProduct(payload);
     if (deleteProduct.err) {
       return wrapper.error('err', deleteProduct.message, deleteProduct.code);
     }
@@ -23,8 +23,8 @@ class Product {
   }
 
   async updateProduct (payload) {
-    payload.updated_at = moment().format("YYYY-MM-DD HH:mm:ss");
-    let updateProduct = await command.updateProduct(payload);
+    payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    const updateProduct = await command.updateProduct(payload);
     if (updateProduct.err) {
       return wrapper.error('err', updateProduct.message, updateProduct.code);
     }

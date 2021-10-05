@@ -1,17 +1,17 @@
 const joi = require('joi');
 
-const addMerchant = joi.object({
+const addSupplier = joi.object({
   nama: joi.string().required(),
   email: joi.string().email().required(),
   kontak: joi.string().required(),
   detail: joi.string().required()
 });
 
-const deleteMerchant = joi.object({
+const deleteSupplier = joi.object({
   id: joi.number().required()
 });
 
-const updateMerchant = joi.object({
+const updateSupplier = joi.object({
   id: joi.number().required(),
   nama: joi.string().required(),
   email: joi.string().email().required(),
@@ -20,7 +20,7 @@ const updateMerchant = joi.object({
 });
 
 module.exports = {
-  addMerchant,
-  deleteMerchant,
-  updateMerchant
+  addSupplier,
+  deleteSupplier,
+  updateSupplier
 };

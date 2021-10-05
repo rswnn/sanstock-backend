@@ -10,14 +10,13 @@ const autoCodeGeneration = async () => {
   const mappingMysqlToJson = common.mappingMysqlToJson(getMaxCode);
   const maxCode = mappingMysqlToJson[0].kodeTerbesar;
   if (maxCode === null) {
-    return wrapper.data('MRC01', '');
+    return wrapper.data('SUP01', '');
   }
   let urutan = parseInt(maxCode.substring(3, 5));
   urutan++;
   urutan = '' + urutan;
-  const prefix = 'MRC';
   const pad = '00';
-  const kode = prefix + pad.substring(0, pad.length - urutan.length) + urutan;
+  const kode = 'SUP' + pad.substring(0, pad.length - urutan.length) + urutan;
   return wrapper.data(kode, '');
 };
 
