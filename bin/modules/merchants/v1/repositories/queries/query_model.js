@@ -1,8 +1,9 @@
 const joi = require('joi');
 
-const listProduct = joi.object({
+const listMerchant = joi.object({
+  
 });
 
 module.exports = {
-  listProduct
+  listMerchant
 };

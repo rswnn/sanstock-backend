@@ -20,7 +20,7 @@ const response = (res, type, result, message = '', code = 200) => {
   if (type === 'fail') {
     status = false;
     data = '';
-    message = result.message || message;
+    message = result.message ? result.message : message;
     code = checkErrorCode(result);
   }
   res.send(code,

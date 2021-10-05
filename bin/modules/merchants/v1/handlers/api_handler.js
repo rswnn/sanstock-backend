@@ -5,14 +5,14 @@ const queryHandler = require('../repositories/queries/query_handler');
 const queryModel = require('../repositories/queries/query_model');
 const validator = require('../utils/validator');
 
-const addProduct = async (req, res) => {
+const addMerchant = async (req, res) => {
   const payload = req.body;
-  const validatePayload = validator.isValidPayload(payload, commandModel.addProduct);
+  const validatePayload = validator.isValidPayload(payload, commandModel.addMerchant);
   const postRequest = async (result) => {
     if (result.err) {
       return result;
     }
-    return await commandHandler.addProduct(result.data);
+    return await commandHandler.addMerchant(result.data);
   };
   const sendResponse = async (result) => {
     (result.err)
@@ -22,14 +22,14 @@ const addProduct = async (req, res) => {
   sendResponse(await postRequest(validatePayload));
 };
 
-const listProduct = async (req, res) => {
+const listMerchant = async (req, res) => {
   const payload = req.body;
-  const validatePayload = validator.isValidPayload(payload, queryModel.listProduct);
+  const validatePayload = validator.isValidPayload(payload, queryModel.listMerchant);
   const postRequest = async (result) => {
     if (result.err) {
       return result;
     }
-    return await queryHandler.listProduct(result.data);
+    return await queryHandler.listMerchant(payload);
   };
   const sendResponse = async (result) => {
     (result.err)
@@ -39,14 +39,14 @@ const listProduct = async (req, res) => {
   sendResponse(await postRequest(validatePayload));
 };
 
-const deleteProduct = async (req, res) => {
+const deleteMerchant = async (req, res) => {
   const payload = req.params;
-  const validatePayload = validator.isValidPayload(payload, commandModel.deleteProduct);
+  const validatePayload = validator.isValidPayload(payload, commandModel.deleteMerchant);
   const postRequest = async (result) => {
     if (result.err) {
       return result;
     }
-    return await commandHandler.deleteProduct(payload);
+    return await commandHandler.deleteMerchant(payload);
   };
   const sendResponse = async (result) => {
     (result.err)
@@ -56,17 +56,17 @@ const deleteProduct = async (req, res) => {
   sendResponse(await postRequest(validatePayload));
 };
 
-const updateProduct = async (req, res) => {
+const updateMerchant = async (req, res) => {
   const payload = {
     ...req.params,
     ...req.body
   };
-  const validatePayload = validator.isValidPayload(payload, commandModel.updateProduct);
+  const validatePayload = validator.isValidPayload(payload, commandModel.updateMerchant);
   const postRequest = async (result) => {
     if (result.err) {
       return result;
     }
-    return await commandHandler.updateProduct(payload);
+    return await commandHandler.updateMerchant(payload);
   };
   const sendResponse = async (result) => {
     (result.err)
@@ -77,8 +77,8 @@ const updateProduct = async (req, res) => {
 };
 
 module.exports = {
-  addProduct,
-  listProduct,
-  deleteProduct,
-  updateProduct
+  addMerchant,
+  listMerchant,
+  deleteMerchant,
+  updateMerchant
 };

@@ -14,7 +14,7 @@ const authenticate = async (req, res) => {
   };
   const sendResponse = async (result) => {
     (result.err)
-      ? wrapper.response(res, 'fail', result)
+      ? wrapper.response(res, 'fail', result.err, result.message)
       : wrapper.response(res, 'success', result, result.message);
   };
   sendResponse(await postRequest(validatePayload));
