@@ -4,6 +4,12 @@ const wrapper = require('../helpers/utils/wrapper');
 const basicAuth = require('../auth/basic_auth_helper');
 const corsMiddleware = require('restify-cors-middleware');
 const mysqlConnectionPooling = require('../infrastructure/databases/mysql/connection');
+const userHandler = require('../modules/user/v1/handlers/api_handler');
+const productHandler = require('../modules/products/v1/handlers/api_handler');
+const merchantHandler = require('../modules/merchants/v1/handlers/api_handler');
+const supplierHandler = require('../modules/suppliers/v1/handlers/api_handler');
+const masterHandler = require('../modules/masters/v1/handlers/api_handler');
+const jwtAuth = require('../auth/jwt_auth_helper');
 
 function AppServer () {
   this.server = restify.createServer({
@@ -41,6 +47,24 @@ function AppServer () {
         Add new route
     ====================
   */
+  this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
+
+  this.server.post('/products/v1', jwtAuth.verifyToken, productHandler.addProduct);
+  this.server.get('/products/v1', jwtAuth.verifyToken, productHandler.listProduct);
+  this.server.del('/products/v1/:id', jwtAuth.verifyToken, productHandler.deleteProduct);
+  this.server.put('/products/v1/:id', jwtAuth.verifyToken, productHandler.updateProduct);
+
+  this.server.post('/merchants/v1', jwtAuth.verifyToken, merchantHandler.addMerchant);
+  this.server.get('/merchants/v1', jwtAuth.verifyToken, merchantHandler.listMerchant);
+  this.server.del('/merchants/v1/:id', jwtAuth.verifyToken, merchantHandler.deleteMerchant);
+  this.server.put('/merchants/v1/:id', jwtAuth.verifyToken, merchantHandler.updateMerchant);
+
+  this.server.post('/suppliers/v1', jwtAuth.verifyToken, supplierHandler.addSupplier);
+  this.server.get('/suppliers/v1', jwtAuth.verifyToken, supplierHandler.listSupplier);
+  this.server.del('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.deleteSupplier);
+  this.server.put('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.updateSupplier);
+
+  this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
 
   mysqlConnectionPooling.init();
 }
