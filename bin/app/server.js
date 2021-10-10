@@ -9,6 +9,8 @@ const productHandler = require('../modules/products/v1/handlers/api_handler');
 const merchantHandler = require('../modules/merchants/v1/handlers/api_handler');
 const supplierHandler = require('../modules/suppliers/v1/handlers/api_handler');
 const masterHandler = require('../modules/masters/v1/handlers/api_handler');
+const saleHandler = require('../modules/sales/v1/handlers/api_handler');
+const transactionHandler = require('../modules/transactions/v1/handlers/api_handler');
 const jwtAuth = require('../auth/jwt_auth_helper');
 
 function AppServer () {
@@ -65,6 +67,12 @@ function AppServer () {
   this.server.put('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.updateSupplier);
 
   this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
+
+  this.server.get('/sales/v1', jwtAuth.verifyToken, saleHandler.addSale);
+  // this.server.del('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.deleteSale);
+  // this.server.put('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.updateSale);
+
+  this.server.get('/transactions/v1/histories', jwtAuth.verifyToken, transactionHandler.listHistory);
 
   mysqlConnectionPooling.init();
 }
