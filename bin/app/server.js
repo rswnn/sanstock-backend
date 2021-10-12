@@ -11,6 +11,7 @@ const supplierHandler = require('../modules/suppliers/v1/handlers/api_handler');
 const masterHandler = require('../modules/masters/v1/handlers/api_handler');
 const saleHandler = require('../modules/sales/v1/handlers/api_handler');
 const transactionHandler = require('../modules/transactions/v1/handlers/api_handler');
+const cashHandler = require('../modules/cash_flow/v1/handlers/api_handlers');
 const jwtAuth = require('../auth/jwt_auth_helper');
 
 function AppServer () {
@@ -65,6 +66,8 @@ function AppServer () {
   this.server.get('/suppliers/v1', jwtAuth.verifyToken, supplierHandler.listSupplier);
   this.server.del('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.deleteSupplier);
   this.server.put('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.updateSupplier);
+
+  this.server.post('/cash/v1', jwtAuth.verifyToken, cashHandler.addCash);
 
   this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
 
