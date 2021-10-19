@@ -13,6 +13,7 @@ const saleHandler = require('../modules/sales/v1/handlers/api_handler');
 const transactionHandler = require('../modules/transactions/v1/handlers/api_handler');
 const cashHandler = require('../modules/cash_flow/v1/handlers/api_handlers');
 const jwtAuth = require('../auth/jwt_auth_helper');
+const postgresqlConnectionPooling = require('../infrastructure/databases/postgresql/connection');
 
 function AppServer () {
   this.server = restify.createServer({
@@ -77,7 +78,8 @@ function AppServer () {
 
   this.server.get('/transactions/v1/histories', jwtAuth.verifyToken, transactionHandler.listHistory);
 
-  mysqlConnectionPooling.init();
+  // mysqlConnectionPooling.init();
+  postgresqlConnectionPooling.init();
 }
 
 module.exports = AppServer;

@@ -27,6 +27,7 @@
     "nodemon": "^2.0.12",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
+    "pg": "^8.7.1",
     "pre-commit": "^1.2.2",
     "restify": "^8.5.1",
     "restify-cors-middleware": "^1.1.1",
