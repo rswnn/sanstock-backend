@@ -8,6 +8,14 @@ const listSale = async () => {
   return result;
 };
 
+const countSalesBySKU = async (sku) => {
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = `SELECT COUNT(*) FROM sales WHERE sku = '${sku}'`;
+  const result = await db.query(query);
+  return result;
+};
+
 module.exports = {
-  listSale
+  listSale,
+  countSalesBySKU
 };
