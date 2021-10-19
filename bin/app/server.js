@@ -78,8 +78,8 @@ function AppServer () {
 
   this.server.get('/transactions/v1/histories', jwtAuth.verifyToken, transactionHandler.listHistory);
 
-  // mysqlConnectionPooling.init();
-  postgresqlConnectionPooling.init();
+  mysqlConnectionPooling.init();
+  // postgresqlConnectionPooling.init();
 }
 
 module.exports = AppServer;
