@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        table {
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        </style>
+    </head>
+    <body>
+        <div style="width: 85%; margin: 0 7.5%;">
+            <div style="text-align: center; padding-left: 50px;">            
+                <h3>Inventory Report</h5>
+                <table>
+                    <tr>
+                        <th>NO</th>
+                        <th>SKU</th>
+                        <th>SKU INDUK</th>
+                        <th>NAMA PRODUK</th>
+                        <th>VARIAN</th>
+                        <th>SIZE</th>
+                        <th>IN</th>
+                        <th>OUT</th>
+                        <th>END STOCK</th>
+                        <th>HARGA MODAL</th>
+                        <th>NILAI PRODUK</th>
+                    </tr>
+                <% if (datas.length > 0) { %>
+                    <% datas.forEach((datas, i) => {%>
+                       <tr>
+                           <td><%= i=+1 %></td>
+                           <td><%= datas.sku %></td>
+                           <td><%= datas.sku_induk %></td>
+                           <td><%= datas.nama_produk %></td>
+                           <td><%= datas.varian %></td>
+                           <td><%= datas.size %></td>
+                           <td><%= datas.in %></td>
+                           <td><%= datas.out %></td>
+                           <td><%= datas.end_stock %></td>
+                           <td><%= datas.harga_modal %></td>
+                           <td><%=datas.qty %></td></tr>
+                    <%  });%>
+                <% }%>
+                </table>
+             </div>
+        </div>
+    </body>
+</html>
