@@ -69,6 +69,7 @@ function AppServer () {
   this.server.put('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.updateSupplier);
 
   this.server.post('/cash/v1', jwtAuth.verifyToken, cashHandler.addCash);
+  this.server.get('/cash/v1', jwtAuth.verifyToken, cashHandler.getBalance);
 
   this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
 
