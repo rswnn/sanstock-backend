@@ -7,9 +7,7 @@ const addProduct = joi.object({
   varian: joi.string().required(),
   size: joi.number().required(),
   qty: joi.number().default(0),
-  hargaModal: joi.number().required(),
-  kodeMrc: joi.string().allow('').required(),
-  kodeSup: joi.string().allow('').required()
+  hargaModal: joi.number().required()
 });
 
 const deleteProduct = joi.object({

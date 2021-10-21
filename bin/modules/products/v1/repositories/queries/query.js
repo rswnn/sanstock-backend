@@ -11,12 +11,32 @@ const listProduct = async () => {
 const findProductByDate = async (date) => {
   const { startDate, endDate } = date;
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT * FROM products WHERE created_at >= '${startDate}' OR created_at <= '${endDate}' ORDER BY created_at DESC`;
+  const query = `SELECT * FROM products WHERE created_at >= '${startDate}' AND created_at <= '${endDate}'  + interval 1 DAY ORDER BY created_at DESC`;
+  console.log(query)
+  const result = await db.query(query);
+  return result;
+};
+
+const findProductBySKU = async (sku) => {
+  console.log(sku)
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = `SELECT * FROM products WHERE sku = '${sku}' ORDER BY created_at DESC`;
+  console.log(query)
+  const result = await db.query(query);
+  return result;
+};
+
+const findProductBySKUInduk = async (sku) => {
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = `SELECT * FROM products WHERE sku_induk = '${sku}' ORDER BY created_at DESC`;
+  console.log(query)
   const result = await db.query(query);
   return result;
 };
 
 module.exports = {
   listProduct,
-  findProductByDate
+  findProductByDate,
+  findProductBySKU,
+  findProductBySKUInduk
 };
