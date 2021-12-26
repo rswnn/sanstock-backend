@@ -10,7 +10,10 @@ const addSale = joi.object({
   merchantFee: joi.number().required(),
   biayaLain: joi.number().required(),
   ongkir: joi.number().required(),
-  kodeMrc: joi.string().required()
+  kodeMrc: joi.string().required(),
+  userId: joi.number().required(),
+  productId: joi.number().required(),
+  merchantId: joi.number().required()
 });
 
 const deleteSale = joi.object({
@@ -28,7 +31,10 @@ const updateSale = joi.object({
   biayaLain: joi.number().required(),
   ongkir: joi.number().required(),
   kodeMrc: joi.string().required(),
-  id: joi.number().required()
+  id: joi.number().required(),
+  userId: joi.number().required(),
+  productId: joi.number().required(),
+  merchantId: joi.number().required()
 });
 
 module.exports = {
