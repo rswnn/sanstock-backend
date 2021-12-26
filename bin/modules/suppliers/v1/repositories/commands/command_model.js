@@ -4,7 +4,8 @@ const addSupplier = joi.object({
   nama: joi.string().required(),
   email: joi.string().email().required(),
   kontak: joi.string().required(),
-  detail: joi.string().required()
+  detail: joi.string().required(),
+  userId: joi.number().required()
 });
 
 const deleteSupplier = joi.object({
@@ -16,7 +17,8 @@ const updateSupplier = joi.object({
   nama: joi.string().required(),
   email: joi.string().email().required(),
   kontak: joi.string().required(),
-  detail: joi.string().required()
+  detail: joi.string().required(),
+  userId: joi.number().required()
 });
 
 module.exports = {

@@ -12,7 +12,7 @@ const generateReport = async (req, res) => {
     return await commandHandler.generateReport(result.data, res);
   };
   const sendResponse = async (result) => {
-    return result
+    return result;
   };
   sendResponse(await postRequest(validatePayload));
 };

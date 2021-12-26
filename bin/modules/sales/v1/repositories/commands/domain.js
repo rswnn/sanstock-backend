@@ -12,13 +12,15 @@ class Sale {
     if (insertSale.err) {
       return wrapper.error('err', insertSale.message, insertSale.code);
     }
+
+    const insertId = { ...insertSale.data };
+    payload.salesId = insertId.insertId;
     payload.dateTime = payload.createdAt;
     payload.type = 1;
     payload.cashIn = payload.hargaJual;
     payload.cashOut = 0;
-    payload.total = 1000;
-    payload.description = "Tambah Income";
-    const insertCashFlow = await commandCashFLow.insertCashFromAddSale(payload)
+    payload.description = 'Tambah Income';
+    const insertCashFlow = await commandCashFLow.insertCashFromAddSale(payload);
     if (insertCashFlow.err) {
       return wrapper.error('err', insertCashFlow.message, insertCashFlow.code);
     }
