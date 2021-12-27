@@ -51,7 +51,7 @@ class Report {
         findProductByUserId = findProductByUserId.data.map(v => Object.assign({}, v));
         datas = findProductByUserId;
       } else if (supplierId) {
-        let findByProductBySupplierId = await queryProduct.findByProductBySupplierId(supplierId);
+        let findByProductBySupplierId = await queryProduct.findProductBySupplierId(supplierId);
         if (findByProductBySupplierId) {
           // return wrapper.error('err', findByProductBySupplierId.message, findByProductBySupplierId.code);
         } else if (findByProductBySupplierId.data.length === 0) {
@@ -93,7 +93,7 @@ class Report {
       };
       nameFile = 'inventoryReport.ejs';
     }
-    console.log(datas, new Date());
+    console.log(datas, '-------------->');
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
       if (err) {
         res.send(err);
