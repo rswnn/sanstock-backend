@@ -10,7 +10,7 @@ const getMaxCode = async () => {
 
 const listMerchant = async () => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = 'SELECT * FROM merchants';
+  const query = 'SELECT * FROM merchants LEFT JOIN users ON merchants.user_id = users.id';
   const result = await db.query(query);
   return result;
 };
