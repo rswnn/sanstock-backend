@@ -8,7 +8,7 @@ const querySale = require('../../../../sales/v1/repositories/queries/query');
 const wrapper = require('../../../../../helpers/utils/wrapper');
 class Report {
   async generateReport (payload, res) {
-    let { startDate, endDate, sku, skuInduk, data } = payload;
+    let { startDate, endDate, sku, skuInduk, userId, supplierId, data } = payload;
     let datas = []; let nameFile; let additional;
 
     if (data === 'inventory') {
@@ -41,6 +41,24 @@ class Report {
         }
         findProductBySKUInduk = findProductBySKUInduk.data.map(v => Object.assign({}, v));
         datas = findProductBySKUInduk;
+      } else if (userId) {
+        let findProductByUserId = await queryProduct.findProductByUserId(userId);
+        if (findProductByUserId) {
+          // return wrapper.error('err', findProductByUserId.message, findProductByUserId.code);
+        } else if (findProductByUserId.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findProductByUserId = findProductByUserId.data.map(v => Object.assign({}, v));
+        datas = findProductByUserId;
+      } else if (supplierId) {
+        let findByProductBySupplierId = await queryProduct.findByProductBySupplierId(supplierId);
+        if (findByProductBySupplierId) {
+          // return wrapper.error('err', findByProductBySupplierId.message, findByProductBySupplierId.code);
+        } else if (findByProductBySupplierId.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findByProductBySupplierId = findByProductBySupplierId.data.map(v => Object.assign({}, v));
+        datas = findByProductBySupplierId;
       }
       for (const [i, value] of datas.entries()) {
         let countSalesBySKU = await querySale.countSalesBySKU(value.sku);
@@ -75,7 +93,7 @@ class Report {
       };
       nameFile = 'inventoryReport.ejs';
     }
-
+    console.log(datas, new Date());
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
       if (err) {
         res.send(err);
