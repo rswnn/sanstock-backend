@@ -3,7 +3,7 @@ const configs = require('../../../../../infrastructure/configs/global_config');
 
 const listSale = async () => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = 'SELECT sales.*, users.username as userName FROM sales LEFT OUTER JOIN users ON user_id = users.id LEFT OUTER JOIN products ON product_id = products.id LEFT JOIN merchants ON merchant_id = merchants.id';
+  const query = 'SELECT sales.*, users.username as username FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id';
   const result = await db.query(query);
   return result;
 };
