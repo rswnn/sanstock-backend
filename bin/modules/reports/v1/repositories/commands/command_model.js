@@ -7,7 +7,9 @@ const generateReport = joi.object({
   sku: joi.string().optional(),
   skuInduk: joi.string().optional(),
   userId: joi.string(),
-  supplierId: joi.string()
+  supplierId: joi.string(),
+  merchantId: joi.string().optional(),
+  productId: joi.string().optional()
 });
 
 module.exports = {

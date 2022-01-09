@@ -4,11 +4,12 @@ const ejs = require('ejs');
 const pdf = require('html-pdf');
 const path = require('path');
 const queryProduct = require('../../../../products/v1/repositories/queries/query');
-const querySale = require('../../../../sales/v1/repositories/queries/query');
+const querySales = require('../../../../sales/v1/repositories/queries/query');
 const wrapper = require('../../../../../helpers/utils/wrapper');
+
 class Report {
   async generateReport (payload, res) {
-    let { startDate, endDate, sku, skuInduk, userId, supplierId, data } = payload;
+    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data } = payload;
     let datas = []; let nameFile; let additional;
 
     if (data === 'inventory') {
@@ -61,7 +62,7 @@ class Report {
         datas = findByProductBySupplierId;
       }
       for (const [i, value] of datas.entries()) {
-        let countSalesBySKU = await querySale.countSalesBySKU(value.sku);
+        let countSalesBySKU = await querySales.countSalesBySKU(value.sku);
         if (!countSalesBySKU.err) {
           countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
           datas[i].out = countSalesBySKU[0]['COUNT(*)'];
@@ -92,7 +93,89 @@ class Report {
         filter: 'Filter'
       };
       nameFile = 'inventoryReport.ejs';
-    }
+    };
+    if (data === 'sales') {
+      if (startDate && endDate) {
+        startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate });
+        if (findSalesByDate) {
+          // return wrapper.error('err', findSalesByDate.message, findSalesByDate.code);
+        } else if (findSalesByDate.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findSalesByDate = findSalesByDate.data.map(v => Object.assign({}, v));
+        datas = findSalesByDate;
+      } else if (sku) {
+        let findSalesBySKU = await querySales.findSalesBySKU(sku);
+        if (findSalesBySKU) {
+          // return wrapper.error('err', findSalesBySKU.message, findSalesBySKU.code);
+        } else if (findSalesBySKU.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findSalesBySKU = findSalesBySKU.data.map(v => Object.assign({}, v));
+        datas = findSalesBySKU;
+      } else if (userId) {
+        let findSalesByUserId = await querySales.findSalesByUserId(userId);
+        if (findSalesByUserId) {
+          // return wrapper.error('err', findSalesByUserId.message, findSalesByUserId.code);
+        } else if (findSalesByUserId.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findSalesByUserId = findSalesByUserId.data.map(v => Object.assign({}, v));
+        datas = findSalesByUserId;
+      } else if (productId) {
+        let findSalesByProductId = await querySales.findSalesByProductId(productId);
+        if (findSalesByProductId) {
+          // return wrapper.error('err', findSalesByProductId.message, findSalesByProductId.code);
+        } else if (findSalesByProductId.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findSalesByProductId = findSalesByProductId.data.map(v => Object.assign({}, v));
+        datas = findSalesByProductId;
+      } else if (merchantId) {
+        let findSalesByMerchantId = await querySales.findSalesByMerchantId(merchantId);
+        if (findSalesByMerchantId) {
+          // return wrapper.error('err', findSalesByMerchantId.message, findSalesByMerchantId.code);
+        } else if (findSalesByMerchantId.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findSalesByMerchantId = findSalesByMerchantId.data.map(v => Object.assign({}, v));
+        datas = findSalesByMerchantId;
+      }
+      for (const [i, value] of datas.entries()) {
+        let countSalesBySKU = await querySales.countSalesBySKU(value.sku);
+        if (!countSalesBySKU.err) {
+          countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
+          datas[i].out = countSalesBySKU[0]['COUNT(*)'];
+        } else {
+          datas[i].out = 0;
+        }
+        datas[i].in = value.qty;
+        datas[i].end_stock = datas[i].in - datas[i].out;
+        datas[i].nilai_produk = datas[i].harga_modal * datas[i].end_stock;
+      }
+
+      additional = {
+        in: datas.reduce((accumulator, current) => {
+          return accumulator + current.qty;
+        }, 0),
+        out: datas.reduce((accumulator, current) => {
+          return accumulator + current.out;
+        }, 0),
+        end_stock: datas.reduce((accumulator, current) => {
+          return accumulator + current.end_stock;
+        }, 0),
+        harga_modal: datas.reduce((accumulator, current) => {
+          return accumulator + current.harga_modal;
+        }, 0),
+        nilai_produk: datas.reduce((accumulator, current) => {
+          return accumulator + current.nilai_produk;
+        }, 0),
+        filter: 'Filter'
+      };
+      nameFile = 'inventoryReport.ejs';
+    };
     console.log(datas, '-------------->');
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
       if (err) {
