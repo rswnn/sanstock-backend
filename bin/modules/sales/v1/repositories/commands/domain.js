@@ -21,7 +21,8 @@ class Sale {
     payload.cashOut = 0;
     payload.description = 'Tambah Income';
     const insertCashFlow = await commandCashFLow.insertCashFromAddSale(payload);
-    if (insertCashFlow.err) {
+    const updateStockAfterSale = await command.updateStockAfterSale({ id: payload.productId });
+    if (insertCashFlow.err || updateStockAfterSale.err) {
       return wrapper.error('err', insertCashFlow.message, insertCashFlow.code);
     }
     return wrapper.data('', 'Success Input', 201);
