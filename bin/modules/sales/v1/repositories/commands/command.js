@@ -12,6 +12,14 @@ const insertSale = async (param) => {
   return result;
 };
 
+const updateStockAfterSale = async (param) => {
+  const { id, qty = 1 } = param;
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = `UPDATE products set qty = qty - ${qty} WHERE id = ${id}`;
+  const result = await db.query(query);
+  return result;
+};
+
 const deleteSale = async (param) => {
   const { id } = param;
   const db = new Mysql(configs.get('/mysqlConfig'));
@@ -43,5 +51,6 @@ const updateSale = async (param) => {
 module.exports = {
   insertSale,
   deleteSale,
-  updateSale
+  updateSale,
+  updateStockAfterSale
 };

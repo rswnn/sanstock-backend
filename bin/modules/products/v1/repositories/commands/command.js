@@ -19,10 +19,11 @@ const deleteProduct = async (param) => {
 };
 
 const updateProduct = async (param) => {
-  const { id, sku, skuInduk, namaProduk, varian, size, updatedAt, userId, supplierId } = param;
+  const { id, sku, skuInduk, namaProduk, varian, size, updatedAt, userId, supplierId, hargaModal } = param;
   const db = new Mysql(configs.get('/mysqlConfig'));
   const query = `UPDATE products 
-  SET sku = '${sku}', sku_induk = '${skuInduk}', nama_produk = '${namaProduk}', varian = '${varian}', size = '${size}', updated_at = '${updatedAt}', user_id = '${userId}', supplier_id = '${supplierId}'
+  SET sku = '${sku}', sku_induk = '${skuInduk}', nama_produk = '${namaProduk}', varian = '${varian}', size = '${size}', updated_at = '${updatedAt}', user_id = '${userId}',
+  harga_modal = '${hargaModal}'
   WHERE products.id = ${id}`;
   const result = await db.query(query, [param]);
   return result;
