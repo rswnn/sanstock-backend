@@ -29,6 +29,24 @@ const addSale = async (req, res) => {
   sendResponse(await postRequest(validatePayload));
 };
 
+const addStock = async (req, res) => {
+  const userId = await getUser(req, res);
+  const payload = { ...req.body, userId: userId.id };
+  const validatePayload = validator.isValidPayload(payload, commandModel.addStock);
+  const postRequest = async (result) => {
+    if (result.err) {
+      return result;
+    }
+    return await commandHandler.addStock(result.data);
+  };
+  const sendResponse = async (result) => {
+    (result.err)
+      ? wrapper.response(res, 'fail', result.err, result.message)
+      : wrapper.response(res, 'success', result, result.message, result.code);
+  };
+  sendResponse(await postRequest(validatePayload));
+};
+
 const listProduct = async (req, res) => {
   const payload = req.body;
   const validatePayload = validator.isValidPayload(payload, queryModel.listProduct);
@@ -89,5 +107,6 @@ module.exports = {
   addSale,
   listProduct,
   deleteSale,
-  updateSale
+  updateSale,
+  addStock
 };
