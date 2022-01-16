@@ -47,6 +47,36 @@ class User {
     }
     return wrapper.data(user, 'Success', 201);
   }
-}
+
+  async updateUser (payload) {
+    const { id, username, password, role } = payload;
+
+    const user = {
+      id,
+      username,
+      role
+    };
+
+    if(password){
+      // generate salt to hash password
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(password, salt);
+    }
+    const updateUser = await command.updateUser(user);
+    if (updateUser.err) {
+      return wrapper.error('err', updateUser.message, updateUser.code);
+    }
+    return wrapper.data('', 'Success Update', 201);
+  }
+
+  async deleteUser (payload) {
+    const deleteUser = await command.deleteUser(payload);
+    if (deleteUser.err) {
+      return wrapper.error('err', deleteUser.message, deleteUser.code);
+    }
+    return wrapper.data('', 'Success Delete', 201);
+  }
+} 
 
 module.exports = User;

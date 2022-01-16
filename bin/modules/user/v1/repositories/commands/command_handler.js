@@ -12,7 +12,21 @@ const register = async (payload) => {
   return postCommand(payload);
 };
 
+const updateUser = async (payload) => {
+  const user = new User();
+  const postCommand = async payload => user.updateUser(payload);
+  return postCommand(payload);
+};
+
+const deleteUser = async (payload) => {
+  const user = new User();
+  const postCommand = async payload => user.deleteUser(payload);
+  return postCommand(payload);
+};
+
 module.exports = {
   authenticate,
-  register
+  register,
+  updateUser,
+  deleteUser
 };
