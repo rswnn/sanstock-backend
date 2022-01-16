@@ -4,9 +4,16 @@ const commandModel = require('../repositories/commands/command_model');
 const queryHandler = require('../repositories/queries/query_handler');
 const queryModel = require('../repositories/queries/query_model');
 const validator = require('../utils/validator');
+const jwtAuth = require('../../../../auth/jwt_auth_helper');
+
+const getUser = async (req, res) => {
+  const user = await jwtAuth.getUser(req, res);
+  return user;
+};
 
 const addCash = async (req, res) => {
-  const payload = req.body;
+  const userId = await getUser(req, res);
+  const payload = { ...req.body, userId: userId.id };
   const validatePayload = validator.isValidPayload(payload, commandModel.addCash);
   const postRequest = async (result) => {
     if (result.err) {

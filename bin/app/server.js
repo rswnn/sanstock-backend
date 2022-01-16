@@ -51,6 +51,8 @@ function AppServer () {
         Add new route
     ====================
   */
+
+  console.log(this.server.url);
   this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
   this.server.post('/users/v1/register', basicAuth.isAuthenticated, userHandler.register);
 
@@ -74,13 +76,14 @@ function AppServer () {
 
   this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
 
-  this.server.get('/sales/v1', jwtAuth.verifyToken, saleHandler.addSale);
-  // this.server.del('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.deleteSale);
-  // this.server.put('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.updateSale);
+  this.server.post('/sales/v1', jwtAuth.verifyToken, saleHandler.addSale);
+  this.server.post('/sales/v1/stock', jwtAuth.verifyToken, saleHandler.addStock);
+  this.server.del('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.deleteSale);
+  this.server.put('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.updateSale);
 
   this.server.get('/transactions/v1/histories', jwtAuth.verifyToken, transactionHandler.listHistory);
 
-  this.server.get("/generateReport", jwtAuth.verifyToken, generateReportHandler.generateReport);
+  this.server.get('/generateReport', jwtAuth.verifyToken, generateReportHandler.generateReport);
 
   mysqlConnectionPooling.init();
   // postgresqlConnectionPooling.init();
