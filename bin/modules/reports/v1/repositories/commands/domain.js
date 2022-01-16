@@ -175,6 +175,14 @@ class Report {
         }, 0),
         filter: 'Filter'
       };
+      if (transactionType === 'in') {
+        datas = datas.map(res => {
+          if (res.transaction_type) {
+            res.profit = Number(res.harga_jual) - Number(res.hargaProduct) - Number(res.pajak) - Number(res.ongkir) - Number(res.biaya_lain) - Number(res.merchant_fee);
+          }
+          return res;
+        });
+      }
       nameFile = 'inventoryReport.ejs';
     };
     console.log(datas, '-------------->');
