@@ -52,8 +52,10 @@ function AppServer () {
     ====================
   */
 
-  console.log(this.server.url);
   this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
+  this.server.post('/users/v1/add', userHandler.addUser);
+  this.server.put('/users/v1/update', jwtAuth.verifyToken, userHandler.updateUser);
+  this.server.get('/users/v1', basicAuth.isAuthenticated, userHandler.getListUser);
 
   this.server.post('/products/v1', jwtAuth.verifyToken, productHandler.addProduct);
   this.server.get('/products/v1', jwtAuth.verifyToken, productHandler.listProduct);
@@ -76,7 +78,6 @@ function AppServer () {
   this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
 
   this.server.post('/sales/v1', jwtAuth.verifyToken, saleHandler.addSale);
-  this.server.post('/sales/v1/stock', jwtAuth.verifyToken, saleHandler.addStock);
   this.server.del('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.deleteSale);
   this.server.put('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.updateSale);
 

@@ -9,7 +9,7 @@ const wrapper = require('../../../../../helpers/utils/wrapper');
 
 class Report {
   async generateReport (payload, res) {
-    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data } = payload;
+    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, transactionType } = payload;
     let datas = []; let nameFile; let additional;
 
     if (data === 'inventory') {
@@ -98,7 +98,7 @@ class Report {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
         endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
-        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate });
+        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate, transactionType });
         if (findSalesByDate) {
           // return wrapper.error('err', findSalesByDate.message, findSalesByDate.code);
         } else if (findSalesByDate.data.length === 0) {
@@ -107,7 +107,7 @@ class Report {
         findSalesByDate = findSalesByDate.data.map(v => Object.assign({}, v));
         datas = findSalesByDate;
       } else if (sku) {
-        let findSalesBySKU = await querySales.findSalesBySKU(sku);
+        let findSalesBySKU = await querySales.findSalesBySKU(sku, transactionType);
         if (findSalesBySKU) {
           // return wrapper.error('err', findSalesBySKU.message, findSalesBySKU.code);
         } else if (findSalesBySKU.data.length === 0) {
@@ -115,8 +115,9 @@ class Report {
         }
         findSalesBySKU = findSalesBySKU.data.map(v => Object.assign({}, v));
         datas = findSalesBySKU;
+        console.log(datas, 'wwwwwwwwwwwwwwwwwwwwwwwww');
       } else if (userId) {
-        let findSalesByUserId = await querySales.findSalesByUserId(userId);
+        let findSalesByUserId = await querySales.findSalesByUserId(userId, transactionType);
         if (findSalesByUserId) {
           // return wrapper.error('err', findSalesByUserId.message, findSalesByUserId.code);
         } else if (findSalesByUserId.data.length === 0) {
@@ -125,7 +126,7 @@ class Report {
         findSalesByUserId = findSalesByUserId.data.map(v => Object.assign({}, v));
         datas = findSalesByUserId;
       } else if (productId) {
-        let findSalesByProductId = await querySales.findSalesByProductId(productId);
+        let findSalesByProductId = await querySales.findSalesByProductId(productId, transactionType);
         if (findSalesByProductId) {
           // return wrapper.error('err', findSalesByProductId.message, findSalesByProductId.code);
         } else if (findSalesByProductId.data.length === 0) {
@@ -134,7 +135,7 @@ class Report {
         findSalesByProductId = findSalesByProductId.data.map(v => Object.assign({}, v));
         datas = findSalesByProductId;
       } else if (merchantId) {
-        let findSalesByMerchantId = await querySales.findSalesByMerchantId(merchantId);
+        let findSalesByMerchantId = await querySales.findSalesByMerchantId(merchantId, transactionType);
         if (findSalesByMerchantId) {
           // return wrapper.error('err', findSalesByMerchantId.message, findSalesByMerchantId.code);
         } else if (findSalesByMerchantId.data.length === 0) {
