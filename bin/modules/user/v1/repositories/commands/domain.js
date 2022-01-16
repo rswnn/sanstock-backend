@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const query = require('../queries/query');
 const jwtAuth = require('../../../../../auth/jwt_auth_helper');
 const { expiredToken } = require('../../utils/constants');
+const command = require('../../../../user/v1/repositories/commands/command');
 class User {
   async authenticate (payload) {
     let findUser = await query.findUser(payload);
@@ -25,6 +26,26 @@ class User {
       return wrapper.data(dataResponse, 'Valid password', 200);
     }
     return wrapper.data('', 'Invalid Password', 400);
+  }
+
+  async register (payload) {
+    const { username, password, role } = payload;
+
+    const user = {
+      username,
+      role
+    };
+
+    // generate salt to hash password
+    const salt = await bcrypt.genSalt(10);
+
+    user.password = await bcrypt.hash(password, salt);
+
+    let insertOneUser = await command.insertOneUser(user);
+    if (insertOneUser.err) {
+      return wrapper.error('err', insertOneUser.message, findUser.code);
+    }
+    return wrapper.data(user, 'Success', 201);
   }
 }
 

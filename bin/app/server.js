@@ -51,7 +51,10 @@ function AppServer () {
         Add new route
     ====================
   */
+
+  console.log(this.server.url);
   this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
+  this.server.post('/users/v1/register', basicAuth.isAuthenticated, userHandler.register);
 
   this.server.post('/products/v1', jwtAuth.verifyToken, productHandler.addProduct);
   this.server.get('/products/v1', jwtAuth.verifyToken, productHandler.listProduct);
@@ -69,16 +72,18 @@ function AppServer () {
   this.server.put('/suppliers/v1/:id', jwtAuth.verifyToken, supplierHandler.updateSupplier);
 
   this.server.post('/cash/v1', jwtAuth.verifyToken, cashHandler.addCash);
+  this.server.get('/cash/v1', jwtAuth.verifyToken, cashHandler.getBalance);
 
   this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
 
-  this.server.get('/sales/v1', jwtAuth.verifyToken, saleHandler.addSale);
-  // this.server.del('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.deleteSale);
-  // this.server.put('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.updateSale);
+  this.server.post('/sales/v1', jwtAuth.verifyToken, saleHandler.addSale);
+  this.server.post('/sales/v1/stock', jwtAuth.verifyToken, saleHandler.addStock);
+  this.server.del('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.deleteSale);
+  this.server.put('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.updateSale);
 
   this.server.get('/transactions/v1/histories', jwtAuth.verifyToken, transactionHandler.listHistory);
 
-  this.server.get("/generateReport", jwtAuth.verifyToken, generateReportHandler.generateReport);
+  this.server.get('/generateReport', jwtAuth.verifyToken, generateReportHandler.generateReport);
 
   mysqlConnectionPooling.init();
   // postgresqlConnectionPooling.init();

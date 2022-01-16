@@ -28,8 +28,8 @@
                         <th>HARGA MODAL</th>
                         <th>NILAI PRODUK</th>
                     </tr>
-                <% if (datas.length > 0) { %>
-                    <% datas.forEach((datas, i) => {%>
+                <% if (datas.datas.length > 0) { %>
+                    <% datas.datas.forEach((datas, i) => {%>
                        <tr>
                            <td><%= i=+1 %></td>
                            <td><%= datas.sku %></td>
@@ -41,9 +41,18 @@
                            <td><%= datas.out %></td>
                            <td><%= datas.end_stock %></td>
                            <td><%= datas.harga_modal %></td>
-                           <td><%=datas.qty %></td></tr>
+                           <td><%=datas.nilai_produk %></td>
+                        </tr>
                     <%  });%>
                 <% }%>
+                    <tr>
+                        <td colspan="6">Total</td>
+                        <td><%= datas.in %></td>
+                        <td><%= datas.out %></td>
+                        <td><%= datas.end_stock %></td>
+                        <td><%= datas.harga_modal %></td>
+                        <td><%= datas.nilai_produk %></td>
+                    </tr>
                 </table>
              </div>
         </div>
