@@ -5,11 +5,14 @@ const pdf = require('html-pdf');
 const path = require('path');
 const queryProduct = require('../../../../products/v1/repositories/queries/query');
 const querySales = require('../../../../sales/v1/repositories/queries/query');
+const queryMechant = require('../../../../merchants/v1/repositories/queries/query');
+const querySupplier = require('../../../../suppliers/v1/repositories/queries/query');
+const queryCashFlow = require('../../../../cash_flow/v1/repositories/queries/query');
 const wrapper = require('../../../../../helpers/utils/wrapper');
 
 class Report {
   async generateReport (payload, res) {
-    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data } = payload;
+    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, typeCash } = payload;
     let datas = []; let nameFile; let additional;
 
     if (data === 'inventory') {
@@ -176,7 +179,43 @@ class Report {
       };
       nameFile = 'inventoryReport.ejs';
     };
-    console.log(datas, '-------------->');
+    if (data === 'merchant') {
+      let findMerchant = await queryMechant.listMerchant();
+
+      if (findMerchant.err) {
+        return wrapper.error('err', findMerchant.message, findMerchant.code);
+      }
+      findMerchant = findMerchant.data.map(v => Object.assign({}, v));
+      datas = findMerchant;
+      nameFile = 'inventoryReport.ejs';
+    }
+    if (data === 'supplier') {
+      let findSupplier = await querySupplier.listSupplier();
+
+      if (findSupplier.err) {
+        return wrapper.error('err', findSupplier.message, findSupplier.code);
+      }
+      findSupplier = findSupplier.data.map(v => Object.assign({}, v));
+      datas = findSupplier;
+      nameFile = 'inventoryReport.ejs';
+    }
+
+    if (data === 'cash') {
+      if (startDate && endDate) {
+        startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        let findCashByDate = await queryCashFlow.getCashByDate({ startDate, endDate });
+        if (findCashByDate.err) {
+          // return wrapper.error('err', findCashByDate.message, findCashByDate.code);
+        } else if (findCashByDate.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findCashByDate = findCashByDate.data.map(v => Object.assign({}, v));
+        datas = typeCash === 'in' ? findCashByDate.filter(res => res.cash_in > 0) : findCashByDate.filter(res => res.cash_out > 0);
+        nameFile = 'inventoryReport.ejs';
+      }
+    }
+
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
       if (err) {
         res.send(err);

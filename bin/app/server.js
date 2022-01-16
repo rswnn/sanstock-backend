@@ -52,7 +52,6 @@ function AppServer () {
     ====================
   */
 
-  console.log(this.server.url);
   this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
 
   this.server.post('/products/v1', jwtAuth.verifyToken, productHandler.addProduct);

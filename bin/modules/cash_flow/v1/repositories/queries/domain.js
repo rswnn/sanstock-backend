@@ -19,6 +19,16 @@ class CashFlow {
     };
     return wrapper.data(getBalance, 'Success', 200);
   }
+
+  async getCashByDate () {
+    const getCashByDate = await query.getBalance();
+
+    if (getCashByDate.err) {
+      return wrapper.data([], 'Data Not Found', 404);
+    }
+
+    return wrapper.data(getCashByDate, 'Success', 200);
+  }
 }
 
 module.exports = CashFlow;
