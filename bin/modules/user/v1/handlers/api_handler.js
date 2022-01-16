@@ -20,6 +20,24 @@ const authenticate = async (req, res) => {
   sendResponse(await postRequest(validatePayload));
 };
 
+const register = async (req, res) => {
+  const payload = req.body;
+  const validatePayload = validator.isValidPayload(payload, commandModel.userRegister);
+  const postRequest = async (result) => {
+    if (result.err) {
+      return result;
+    }
+    return await commandHandler.register(payload);
+  };
+  const sendResponse = async (result) => {
+    (result.err)
+      ? wrapper.response(res, 'fail', result.err, result.message)
+      : wrapper.response(res, 'success', result, result.message);
+  };
+  sendResponse(await postRequest(validatePayload));
+};
+
 module.exports = {
-  authenticate
+  authenticate,
+  register
 };
