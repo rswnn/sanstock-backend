@@ -29,10 +29,11 @@ class User {
   }
 
   async register (payload) {
-    const { username, password } = payload;
+    const { username, password, role } = payload;
 
     const user = {
-      username
+      username,
+      role
     };
 
     // generate salt to hash password
