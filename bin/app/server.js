@@ -55,6 +55,9 @@ function AppServer () {
   console.log(this.server.url);
   this.server.post('/users/v1/auth', basicAuth.isAuthenticated, userHandler.authenticate);
   this.server.post('/users/v1/register', basicAuth.isAuthenticated, userHandler.register);
+  this.server.get('/users/v1', jwtAuth.verifyToken, userHandler.getUsers);
+  this.server.put('/users/v1/:id', jwtAuth.verifyToken, userHandler.updateUser);
+  this.server.del('/users/v1/:id', jwtAuth.verifyToken, userHandler.deleteUser);
 
   this.server.post('/products/v1', jwtAuth.verifyToken, productHandler.addProduct);
   this.server.get('/products/v1', jwtAuth.verifyToken, productHandler.listProduct);
