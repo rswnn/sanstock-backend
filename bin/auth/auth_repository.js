@@ -6,11 +6,6 @@ class User {
     this.password = password;
   }
 
-  loginUser (username, password) {
-    // eslint-disable-next-line no-sequences
-    return this.username, this.password === username, password;
-  };
-
   isValidPassword (password) {
     return this.password === password;
   };
