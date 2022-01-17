@@ -177,14 +177,15 @@ class Report {
         }, 0),
         filter: 'Filter'
       };
-      if (transactionType === 'in') {
+      if (transactionType === 'income') {
         datas = datas.map(res => {
-          if (res.transaction_type) {
+          if (res.transaction_type === 'income') {
             res.profit = Number(res.harga_jual) - Number(res.hargaProduct) - Number(res.pajak) - Number(res.ongkir) - Number(res.biaya_lain) - Number(res.merchant_fee);
           }
           return res;
         });
       }
+      console.log(datas, '===========================');
       nameFile = 'inventoryReport.ejs';
     };
     if (data === 'merchant') {
