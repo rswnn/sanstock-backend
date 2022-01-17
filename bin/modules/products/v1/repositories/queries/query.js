@@ -11,7 +11,7 @@ const listProduct = async () => {
 const findProductByDate = async (date) => {
   const { startDate, endDate } = date;
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT products.*, suppliers.kode as kodeSup, suppliers.kontak as kontakSupplier, suppliers.nama as supplierName, users.username as username FROM products LEFT OUTER JOIN users ON products.user_id = users.id LEFT OUTER JOIN suppliers ON products.supplier_id = suppliers.id WHERE products.created_at >= '${startDate}' AND products.created_at <= '${endDate}'  + interval 1 DAY ORDER BY products. created_at ASC`;
+  const query = `SELECT products.*, suppliers.kode as kodeSup, suppliers.kontak as kontakSupplier, suppliers.nama as supplierName, users.username as username FROM products LEFT OUTER JOIN users ON products.user_id = users.id LEFT OUTER JOIN suppliers ON products.supplier_id = suppliers.id WHERE products.created_at >= '${startDate}' AND products.created_at <= '${endDate}'  + interval 1 DAY ORDER BY products.created_at ASC`;
   const result = await db.query(query);
   return result;
 };

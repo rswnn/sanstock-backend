@@ -46,7 +46,25 @@ const getBalance = async (req, res) => {
   sendResponse(await postRequest(validatePayload));
 };
 
+const getCashByDate = async (req, res) => {
+  const payload = req.body;
+  const validatePayload = validator.isValidPayload(payload, queryModel.getCashByDate);
+  const postRequest = async (result) => {
+    if (result.err) {
+      return result;
+    }
+    return await queryHandler.getCashByDate();
+  };
+  const sendResponse = async (result) => {
+    (result.err)
+      ? wrapper.response(res, 'fail', result.err, result.message)
+      : wrapper.response(res, 'success', result, result.message, result.code);
+  };
+  sendResponse(await postRequest(validatePayload));
+};
+
 module.exports = {
   addCash,
-  getBalance
+  getBalance,
+  getCashByDate
 };

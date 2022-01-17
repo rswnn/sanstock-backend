@@ -22,6 +22,15 @@ const getBalance = async () => {
   return result;
 };
 
+const getCashByDate = async (params) => {
+  const { startDate, endDate, type = 0 } = params;
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = `SELECT * from cash_flow WHERE type = '${type}' AND created_at >= '${startDate}' AND created_at <= '${endDate}' + interval 1 DAY ORDER BY created_at ASC`;
+  const result = await db.query(query);
+  return result;
+};
+
 module.exports = {
-  getBalance
+  getBalance,
+  getCashByDate
 };
