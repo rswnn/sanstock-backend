@@ -225,6 +225,29 @@ class Report {
       }
     }
 
+    if (data === 'summary') {
+      const findSalesIncome = await querySales.findAllTransaction({ transactionType: 'income' });
+      const findSalesOutcome = await querySales.findAllTransaction({ transactionType: 'outcome' });
+
+      if (findSalesIncome.err || findSalesOutcome.err) {
+        return '[Error]';
+      }
+      additional = {
+        omset: findSalesIncome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
+          return acc + curr.harga_jual;
+        }, 0),
+        profit: findSalesIncome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
+          return acc + (Number(curr.harga_jual) - Number(curr.hargaProduct) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
+        }, 0),
+        totalOutStock: findSalesOutcome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
+          return acc + curr.harga_jual;
+        }, 0)
+      };
+
+      console.log(additional, 'resultttt');
+      nameFile = 'inventoryReport.ejs';
+    }
+
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
       if (err) {
         res.send(err);
