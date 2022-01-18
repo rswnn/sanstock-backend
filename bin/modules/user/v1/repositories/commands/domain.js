@@ -4,7 +4,7 @@ const query = require('../queries/query');
 const command = require('./command');
 const jwtAuth = require('../../../../../auth/jwt_auth_helper');
 const { expiredToken } = require('../../utils/constants');
-
+const command = require('../../../../user/v1/repositories/commands/command');
 class User {
   async authenticate (payload) {
     let findUser = await query.findUser(payload);
@@ -29,45 +29,55 @@ class User {
     return wrapper.data('', 'Invalid Password', 400);
   }
 
-  async addUser (payload) {
-    const insertOneUser = await command.insertOneUser(payload);
+  async register (payload) {
+    const { username, password, role } = payload;
+
+    const user = {
+      username,
+      role
+    };
+
+    // generate salt to hash password
+    const salt = await bcrypt.genSalt(10);
+
+    user.password = await bcrypt.hash(password, salt);
+
+    let insertOneUser = await command.insertOneUser(user);
     if (insertOneUser.err) {
-      return wrapper.error('err', insertOneUser.message, insertOneUser.code);
+      return wrapper.error('err', insertOneUser.message, findUser.code);
     }
-    return wrapper.data('', 'User Created', 201);
-  }
-
-  async loginUser (payload) {
-    let loginUser = await query.loginUser(payload);
-    if (loginUser.err) {
-      return wrapper.error('err', loginUser.message, loginUser.code);
-    } else if (loginUser.data.length === 0) {
-      return wrapper.data('', 'User Not Found', 404);
-    }
-    loginUser = loginUser.data.map(v => Object.assign({}, v));
-
-    const validPassword = await bcrypt.compare(payload.password, loginUser[0].password);
-    if (validPassword) {
-      const dataResponse = {
-        username: loginUser[0].username,
-        password: loginUser[0].password,
-        // role: loginUser[0].role,
-        sub: loginUser[0].username
-      };
-      const accessToken = await jwtAuth.generateToken(dataResponse, expiredToken.accessToken);
-      dataResponse.accessToken = accessToken;
-      return wrapper.data(dataResponse, 'Valid password', 200);
-    }
-    return wrapper.data('', 'Invalid Password', 400);
+    return wrapper.data(user, 'Success', 201);
   }
 
   async updateUser (payload) {
-    const updateUser = await command.updateUser(payload);
+    const { id, username, password, role } = payload;
+
+    const user = {
+      id,
+      username,
+      role
+    };
+
+    if(password){
+      // generate salt to hash password
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(password, salt);
+    }
+    const updateUser = await command.updateUser(user);
     if (updateUser.err) {
       return wrapper.error('err', updateUser.message, updateUser.code);
     }
     return wrapper.data('', 'Success Update', 201);
   }
-}
+
+  async deleteUser (payload) {
+    const deleteUser = await command.deleteUser(payload);
+    if (deleteUser.err) {
+      return wrapper.error('err', deleteUser.message, deleteUser.code);
+    }
+    return wrapper.data('', 'Success Delete', 201);
+  }
+} 
 
 module.exports = User;
