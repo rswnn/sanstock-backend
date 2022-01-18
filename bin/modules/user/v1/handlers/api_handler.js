@@ -3,6 +3,14 @@ const commandHandler = require('../repositories/commands/command_handler');
 const commandModel = require('../repositories/commands/command_model');
 const queryHandler = require('../repositories/queries/query_handler');
 const validator = require('../utils/validator');
+const jwtAuth = require('../../../../auth/jwt_auth_helper');
+const queryModel = require('../repositories/queries/query');
+// const user = require('../repositories/commands/domain');
+
+const getUser = async (req, res) => {
+  const user = await jwtAuth.getUser(req, res);
+  return user;
+};
 
 const authenticate = async (req, res) => {
   const payload = req.body;

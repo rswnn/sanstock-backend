@@ -1,6 +1,7 @@
 const wrapper = require('../../../../../helpers/utils/wrapper');
 const bcrypt = require('bcrypt');
 const query = require('../queries/query');
+const command = require('./command');
 const jwtAuth = require('../../../../../auth/jwt_auth_helper');
 const { expiredToken } = require('../../utils/constants');
 const command = require('../../../../user/v1/repositories/commands/command');

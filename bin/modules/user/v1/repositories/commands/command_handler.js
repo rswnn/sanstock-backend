@@ -1,5 +1,11 @@
 const User = require('./domain');
 
+const addUser = async (payload) => {
+  const user = new User();
+  const postCommand = async payload => user.addUser(payload);
+  return postCommand(payload);
+};
+
 const authenticate = async (payload) => {
   const user = new User();
   const postCommand = async payload => user.authenticate(payload);

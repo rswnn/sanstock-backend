@@ -5,11 +5,14 @@ const pdf = require('html-pdf');
 const path = require('path');
 const queryProduct = require('../../../../products/v1/repositories/queries/query');
 const querySales = require('../../../../sales/v1/repositories/queries/query');
+const queryMechant = require('../../../../merchants/v1/repositories/queries/query');
+const querySupplier = require('../../../../suppliers/v1/repositories/queries/query');
+const queryCashFlow = require('../../../../cash_flow/v1/repositories/queries/query');
 const wrapper = require('../../../../../helpers/utils/wrapper');
 
 class Report {
   async generateReport (payload, res) {
-    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data } = payload;
+    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, typeCash, transactionType } = payload;
     let datas = []; let nameFile; let additional;
 
     if (data === 'inventory') {
@@ -98,7 +101,7 @@ class Report {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
         endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
-        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate });
+        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate, transactionType });
         if (findSalesByDate) {
           // return wrapper.error('err', findSalesByDate.message, findSalesByDate.code);
         } else if (findSalesByDate.data.length === 0) {
@@ -107,7 +110,7 @@ class Report {
         findSalesByDate = findSalesByDate.data.map(v => Object.assign({}, v));
         datas = findSalesByDate;
       } else if (sku) {
-        let findSalesBySKU = await querySales.findSalesBySKU(sku);
+        let findSalesBySKU = await querySales.findSalesBySKU(sku, transactionType);
         if (findSalesBySKU) {
           // return wrapper.error('err', findSalesBySKU.message, findSalesBySKU.code);
         } else if (findSalesBySKU.data.length === 0) {
@@ -116,7 +119,7 @@ class Report {
         findSalesBySKU = findSalesBySKU.data.map(v => Object.assign({}, v));
         datas = findSalesBySKU;
       } else if (userId) {
-        let findSalesByUserId = await querySales.findSalesByUserId(userId);
+        let findSalesByUserId = await querySales.findSalesByUserId(userId, transactionType);
         if (findSalesByUserId) {
           // return wrapper.error('err', findSalesByUserId.message, findSalesByUserId.code);
         } else if (findSalesByUserId.data.length === 0) {
@@ -125,7 +128,7 @@ class Report {
         findSalesByUserId = findSalesByUserId.data.map(v => Object.assign({}, v));
         datas = findSalesByUserId;
       } else if (productId) {
-        let findSalesByProductId = await querySales.findSalesByProductId(productId);
+        let findSalesByProductId = await querySales.findSalesByProductId(productId, transactionType);
         if (findSalesByProductId) {
           // return wrapper.error('err', findSalesByProductId.message, findSalesByProductId.code);
         } else if (findSalesByProductId.data.length === 0) {
@@ -134,7 +137,7 @@ class Report {
         findSalesByProductId = findSalesByProductId.data.map(v => Object.assign({}, v));
         datas = findSalesByProductId;
       } else if (merchantId) {
-        let findSalesByMerchantId = await querySales.findSalesByMerchantId(merchantId);
+        let findSalesByMerchantId = await querySales.findSalesByMerchantId(merchantId, transactionType);
         if (findSalesByMerchantId) {
           // return wrapper.error('err', findSalesByMerchantId.message, findSalesByMerchantId.code);
         } else if (findSalesByMerchantId.data.length === 0) {
@@ -174,9 +177,77 @@ class Report {
         }, 0),
         filter: 'Filter'
       };
+      if (transactionType === 'income') {
+        datas = datas.map(res => {
+          if (res.transaction_type === 'income') {
+            res.profit = Number(res.harga_jual) - Number(res.hargaProduct) - Number(res.pajak) - Number(res.ongkir) - Number(res.biaya_lain) - Number(res.merchant_fee);
+          }
+          return res;
+        });
+      }
+      console.log(datas, '===========================');
       nameFile = 'inventoryReport.ejs';
     };
-    console.log(datas, '-------------->');
+    if (data === 'merchant') {
+      let findMerchant = await queryMechant.listMerchant();
+
+      if (findMerchant.err) {
+        return wrapper.error('err', findMerchant.message, findMerchant.code);
+      }
+      findMerchant = findMerchant.data.map(v => Object.assign({}, v));
+      datas = findMerchant;
+      nameFile = 'inventoryReport.ejs';
+    }
+    if (data === 'supplier') {
+      let findSupplier = await querySupplier.listSupplier();
+
+      if (findSupplier.err) {
+        return wrapper.error('err', findSupplier.message, findSupplier.code);
+      }
+      findSupplier = findSupplier.data.map(v => Object.assign({}, v));
+      datas = findSupplier;
+      nameFile = 'inventoryReport.ejs';
+    }
+
+    if (data === 'cash') {
+      if (startDate && endDate) {
+        startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        let findCashByDate = await queryCashFlow.getCashByDate({ startDate, endDate });
+        if (findCashByDate.err) {
+          // return wrapper.error('err', findCashByDate.message, findCashByDate.code);
+        } else if (findCashByDate.data.length === 0) {
+          // return wrapper.data([], 'Data Not Found', 404);
+        }
+        findCashByDate = findCashByDate.data.map(v => Object.assign({}, v));
+        datas = typeCash === 'in' ? findCashByDate.filter(res => res.cash_in > 0) : findCashByDate.filter(res => res.cash_out > 0);
+        nameFile = 'inventoryReport.ejs';
+      }
+    }
+
+    if (data === 'summary') {
+      const findSalesIncome = await querySales.findAllTransaction({ transactionType: 'income' });
+      const findSalesOutcome = await querySales.findAllTransaction({ transactionType: 'outcome' });
+
+      if (findSalesIncome.err || findSalesOutcome.err) {
+        return '[Error]';
+      }
+      additional = {
+        omset: findSalesIncome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
+          return acc + curr.harga_jual;
+        }, 0),
+        profit: findSalesIncome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
+          return acc + (Number(curr.harga_jual) - Number(curr.hargaProduct) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
+        }, 0),
+        totalOutStock: findSalesOutcome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
+          return acc + curr.harga_jual;
+        }, 0)
+      };
+
+      console.log(additional, 'resultttt');
+      nameFile = 'inventoryReport.ejs';
+    }
+
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
       if (err) {
         res.send(err);

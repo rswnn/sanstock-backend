@@ -4,6 +4,11 @@ const getBalance = joi.object({
 
 });
 
+const getCashByDate = joi.object({
+
+});
+
 module.exports = {
-  getBalance
+  getBalance,
+  getCashByDate
 };

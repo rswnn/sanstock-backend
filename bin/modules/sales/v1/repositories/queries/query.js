@@ -16,37 +16,45 @@ const countSalesBySKU = async (sku) => {
 };
 
 const findSalesByDate = async (date) => {
-  const { startDate, endDate } = date;
+  const { startDate, endDate, transactionType } = date;
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT sales.*, users.username as username, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.created_at >= '${startDate}' AND sales.created_at <= '${endDate}'  + interval 1 DAY ORDER BY sales.created_at DESC`;
+  const query = `SELECT sales.*, users.username as username, products.harga_modal as hargaProduct, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.transaction_type ='${transactionType}' AND sales.created_at >= '${startDate}' AND sales.created_at <= '${endDate}'  + interval 1 DAY ORDER BY sales.created_at DESC`;
   const result = await db.query(query);
   return result;
 };
 
-const findSalesBySKU = async (sku) => {
+const findSalesBySKU = async (sku, transactionType) => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT sales.*, users.username as username, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE products.sku = '${sku}' ORDER BY sales.created_at DESC`;
+  const query = `SELECT sales.*, users.username as username, products.harga_modal as hargaProduct, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.transaction_type='${transactionType}' AND sales.sku = '${sku}' ORDER BY sales.created_at DESC`;
   const result = await db.query(query);
   return result;
 };
 
-const findSalesByUserId = async (userId) => {
+const findSalesByUserId = async (userId, transactionType) => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT sales.*, users.username as username, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE products.user_id = '${userId}' ORDER BY sales.created_at DESC`;
+  const query = `SELECT sales.*, users.username as username, products.harga_modal as hargaProduct, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.transaction_type='${transactionType}' AND sales.user_id = '${userId}' ORDER BY sales.created_at DESC`;
   const result = await db.query(query);
   return result;
 };
 
-const findSalesByProductId = async (productId) => {
+const findSalesByProductId = async (productId, transactionType) => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT sales.*, users.username as username, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE product_id = '${productId}' ORDER BY sales.created_at DESC`;
+  const query = `SELECT sales.*, users.username as username, products.harga_modal as hargaProduct, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.transaction_type='${transactionType}' AND product_id = '${productId}' ORDER BY sales.created_at DESC`;
   const result = await db.query(query);
   return result;
 };
 
-const findSalesByMerchantId = async (merchantId) => {
+const findSalesByMerchantId = async (merchantId, transactionType) => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT sales.*, users.username as username, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE merchant_id = '${merchantId}' ORDER BY sales.created_at DESC`;
+  const query = `SELECT sales.*, users.username as username, products.harga_modal as hargaProduct, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.transaction_type='${transactionType}' AND merchant_id = '${merchantId}' ORDER BY sales.created_at DESC`;
+  const result = await db.query(query);
+  return result;
+};
+
+const findAllTransaction = async (date) => {
+  const { transactionType } = date;
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = `SELECT sales.*, users.username as username, products.harga_modal as hargaProduct, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.transaction_type ='${transactionType}'`;
   const result = await db.query(query);
   return result;
 };
@@ -58,5 +66,6 @@ module.exports = {
   findSalesBySKU,
   findSalesByProductId,
   findSalesByUserId,
-  findSalesByMerchantId
+  findSalesByMerchantId,
+  findAllTransaction
 };

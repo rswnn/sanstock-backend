@@ -10,7 +10,6 @@ class CashFlow {
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
     const insertCashData = await command.insertCash(payload);
     if (insertCashData.err) {
-      console.log(insertCashData, 'disiniiiiiiiii');
       return wrapper.error('err', insertCashData.message, insertCashData.code);
     }
     return wrapper.data('', 'Success Input', 201);

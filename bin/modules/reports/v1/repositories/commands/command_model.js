@@ -9,7 +9,9 @@ const generateReport = joi.object({
   userId: joi.string(),
   supplierId: joi.string(),
   merchantId: joi.string().optional(),
-  productId: joi.string().optional()
+  productId: joi.string().optional(),
+  typeCash: joi.string().optional(),
+  transactionType: joi.string().optional()
 });
 
 module.exports = {

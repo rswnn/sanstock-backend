@@ -8,7 +8,7 @@ class User {
 
   isValidPassword (password) {
     return this.password === password;
-  }
+  };
 }
 
 module.exports.findByUsername = (username, cb) => {
