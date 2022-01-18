@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+        }
+
+        td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        }
+
+        tr:nth-child(even) {
+        background-color: #dddddd;
+        }
+        </style>
+    </head>
+    <body>
+        <div style="width: 85%; margin: 0 7.5%;">
+            <div style="text-align: center; padding-left: 50px;">            
+                <h3>Summary Report</h5>
+                <table>
+                    <tr>
+                        <th>DESKRIPSI</th>
+                        <th>JUMLAH</th>
+                    </tr>
+                    <tr>
+                        <td>Omset</td>
+                        <td>Rp.<%= datas.omset %></td>
+                    </tr>
+                    <tr>
+                        <td>Profit</td>
+                        <td>Rp.<%= datas.profit %></td>
+                    </tr>
+                    <tr>
+                        <td>KUMULASI PEMBELIAN STOK</td>
+                        <td>Rp.<%= datas.totalOutStock %></td>
+                    </tr>
+                </table>
+             </div>
+        </div>
+    </body>
+</html>

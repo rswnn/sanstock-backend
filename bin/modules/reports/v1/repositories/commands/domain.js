@@ -244,8 +244,7 @@ class Report {
         }, 0)
       };
 
-      console.log(additional, 'resultttt');
-      nameFile = 'inventoryReport.ejs';
+      nameFile = 'summary.ejs';
     }
 
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
