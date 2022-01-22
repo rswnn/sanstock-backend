@@ -1,7 +1,6 @@
 const wrapper = require('../../../../../helpers/utils/wrapper');
 const bcrypt = require('bcrypt');
 const query = require('../queries/query');
-const command = require('./command');
 const jwtAuth = require('../../../../../auth/jwt_auth_helper');
 const { expiredToken } = require('../../utils/constants');
 const command = require('../../../../user/v1/repositories/commands/command');
@@ -30,6 +29,7 @@ class User {
   }
 
   async register (payload) {
+    const findUser = await query.findUser(payload);
     const { username, password, role } = payload;
 
     const user = {
@@ -42,7 +42,7 @@ class User {
 
     user.password = await bcrypt.hash(password, salt);
 
-    let insertOneUser = await command.insertOneUser(user);
+    const insertOneUser = await command.insertOneUser(user);
     if (insertOneUser.err) {
       return wrapper.error('err', insertOneUser.message, findUser.code);
     }
@@ -58,7 +58,7 @@ class User {
       role
     };
 
-    if(password){
+    if (password) {
       // generate salt to hash password
       const salt = await bcrypt.genSalt(10);
 
@@ -78,6 +78,6 @@ class User {
     }
     return wrapper.data('', 'Success Delete', 201);
   }
-} 
+}
 
 module.exports = User;

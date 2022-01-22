@@ -19,7 +19,7 @@ class Report {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
         endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
-        let findProductByDate = await queryProduct.findProductByDate({ startDate, endDate });
+        let findProductByDate = await queryProduct.findProductByDate({ startDate, endDate, sku, skuInduk });
         if (findProductByDate.err) {
           // return wrapper.error('err', findProductByDate.message, findProductByDate.code);
         } else if (findProductByDate.data.length === 0) {
@@ -95,6 +95,7 @@ class Report {
         }, 0),
         filter: 'Filter'
       };
+      console.log(datas);
       nameFile = 'inventoryReport.ejs';
     };
     if (data === 'sales') {
@@ -147,36 +148,42 @@ class Report {
         datas = findSalesByMerchantId;
       }
       for (const [i, value] of datas.entries()) {
-        let countSalesBySKU = await querySales.countSalesBySKU(value.sku);
-        if (!countSalesBySKU.err) {
-          countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
-          datas[i].out = countSalesBySKU[0]['COUNT(*)'];
-        } else {
-          datas[i].out = 0;
-        }
-        datas[i].in = value.qty;
-        datas[i].end_stock = datas[i].in - datas[i].out;
-        datas[i].nilai_produk = datas[i].harga_modal * datas[i].end_stock;
+        const otherPrice = Number(datas[i].pajak) + Number(datas[i].merchant_fee) + Number(datas[i].ongkir) + Number(datas[i].biaya_lain);
+        const received = Number(datas[i].hargaProduct) - (Number(datas[i].hargaProduct) + otherPrice);
+        // let countSalesBySKU = await querySales.countSalesBySKU(value.sku);
+        // if (!countSalesBySKU.err) {
+        //   countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
+        //   datas[i].out = countSalesBySKU[0]['COUNT(*)'];
+        // } else {
+        //   datas[i].out = 0;
+        // }
+        // datas[i].in = Number(value.qty);
+        // datas[i].end_stock = Number(datas[i].in) - Number(datas[i].out);
+        // datas[i].nilai_produk = Number(datas[i].harga_modal) * Number(datas[i].end_stock);
+        datas[i].otherPrice = otherPrice;
+        datas[i].received = received;
       }
 
-      additional = {
-        in: datas.reduce((accumulator, current) => {
-          return accumulator + current.qty;
-        }, 0),
-        out: datas.reduce((accumulator, current) => {
-          return accumulator + current.out;
-        }, 0),
-        end_stock: datas.reduce((accumulator, current) => {
-          return accumulator + current.end_stock;
-        }, 0),
-        harga_modal: datas.reduce((accumulator, current) => {
-          return accumulator + current.harga_modal;
-        }, 0),
-        nilai_produk: datas.reduce((accumulator, current) => {
-          return accumulator + current.nilai_produk;
-        }, 0),
-        filter: 'Filter'
-      };
+      // // TODO GET SKU INDUK
+
+      // additional = {
+      //   in: datas.reduce((accumulator, current) => {
+      //     return accumulator + current.qty;
+      //   }, 0),
+      //   out: datas.reduce((accumulator, current) => {
+      //     return accumulator + current.out;
+      //   }, 0),
+      //   end_stock: datas.reduce((accumulator, current) => {
+      //     return accumulator + current.end_stock;
+      //   }, 0),
+      //   harga_modal: datas.reduce((accumulator, current) => {
+      //     return accumulator + current.harga_modal;
+      //   }, 0),
+      //   nilai_produk: datas.reduce((accumulator, current) => {
+      //     return accumulator + current.nilai_produk;
+      //   }, 0),
+      //   filter: 'Filter'
+      // };
       if (transactionType === 'income') {
         datas = datas.map(res => {
           if (res.transaction_type === 'income') {
@@ -185,8 +192,8 @@ class Report {
           return res;
         });
       }
-      console.log(datas, '===========================');
-      nameFile = 'inventoryReport.ejs';
+      // console.log(datas);
+      nameFile = 'sales.ejs';
     };
     if (data === 'merchant') {
       let findMerchant = await queryMechant.listMerchant();
@@ -196,7 +203,7 @@ class Report {
       }
       findMerchant = findMerchant.data.map(v => Object.assign({}, v));
       datas = findMerchant;
-      nameFile = 'inventoryReport.ejs';
+      nameFile = 'merchant.ejs';
     }
     if (data === 'supplier') {
       let findSupplier = await querySupplier.listSupplier();
@@ -206,7 +213,7 @@ class Report {
       }
       findSupplier = findSupplier.data.map(v => Object.assign({}, v));
       datas = findSupplier;
-      nameFile = 'inventoryReport.ejs';
+      nameFile = 'supplier.ejs';
     }
 
     if (data === 'cash') {
@@ -266,7 +273,7 @@ class Report {
         //   if (err) return console.log(err);
         //   console.log(res); // { filename: '/app/businesscard.pdf' }
         // });
-        pdf.create(data, options).toStream((err, stream) => {
+        pdf.create(data, options).toStream((_, stream) => {
           stream.pipe(res);
         });
       }

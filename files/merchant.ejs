@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+        }
+
+        td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        }
+
+        tr:nth-child(even) {
+        background-color: #dddddd;
+        }
+        </style>
+    </head>
+    <body>
+        <div style="width: 85%; margin: 0 7.5%;">
+            <div style="text-align: center; padding-left: 50px;">            
+                <h3>Merchant Report</h5>
+                <table>
+                    <tr>
+                        <th>NO</th>
+                        <th>KODE MERCHANT</th>
+                        <th>NAMA MERCHANT</th>
+                        <th>EMAIL</th>
+                        <th>KONTAK</th>
+                        <th>DETAIL</th>
+                        <th>AUTHOR</th>
+                    </tr>
+                <% if (datas.datas.length > 0) { %>
+                    <% datas.datas.forEach((datas, i) => {%>
+                       <tr>
+                           <td><%= i + 1 %></td>
+                           <td><%= datas.kode %></td>
+                           <td><%= datas.nama %></td>
+                           <td><%= datas.email %></td>
+                           <td><%= datas.kontak %></td>
+                           <td><%= datas.detail %></td>
+                           <td><%= datas.userName %></td>
+                        </tr>
+                    <%  });%>
+                <% }%>
+                </table>
+             </div>
+        </div>
+    </body>
+</html>

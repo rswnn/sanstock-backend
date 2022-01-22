@@ -4,7 +4,6 @@ const configs = require('../../../../../infrastructure/configs/global_config');
 const insertOneUser = async (param) => {
   const { username, password, role } = param;
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const { username, password, role } = param;
   const query = `INSERT INTO users (id, username, password, role) 
   VALUES (NULL, '${username}', '${password}', '${role}')`;
   const result = await db.query(query, [param]);
@@ -15,11 +14,11 @@ const updateUser = async (param) => {
   const { id, username, password, role } = param;
   const db = new Mysql(configs.get('/mysqlConfig'));
   let query;
-  if(password){
+  if (password) {
     query = `UPDATE users 
     SET username = '${username}', password = '${password}', role = '${role}'
     WHERE users.id = ${id}`;
-  }else{
+  } else {
     query = `UPDATE users 
     SET username = '${username}', role = '${role}'
     WHERE users.id = ${id}`;
