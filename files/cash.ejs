@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+        }
+
+        td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        }
+
+        tr:nth-child(even) {
+        background-color: #dddddd;
+        }
+        </style>
+    </head>
+    <body>
+        <div style="width: 85%; margin: 0 7.5%;">
+            <div style="text-align: center; padding-left: 50px;">            
+                <h3>Sales Report</h5>
+                <table>
+                    <tr>
+                        <th>NO</th>
+                        <th>DESKRIPSI</th>
+                        <th>TOTAL</th>
+                    </tr>
+                <% if (datas.datas.length > 0) { %>
+                    <% datas.datas.forEach((row, i) => {%>
+                       <tr>
+                           <td><%= i + 1 %></td>
+                           <td><%= row.description %></td>
+                           <td><%= datas.transactionType === 'income' ?  row.cash_in : row.cash_out %></td>
+                        </tr>
+                    <%  });%>
+                <% }%>
+                    <tr>
+                        <td colspan="2">Total</td>
+                        <td><%= datas.totalCash %></td>
+                    </tr>
+                </table>
+             </div>
+        </div>
+    </body>
+</html>

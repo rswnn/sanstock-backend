@@ -12,7 +12,7 @@ const wrapper = require('../../../../../helpers/utils/wrapper');
 
 class Report {
   async generateReport (payload, res) {
-    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, typeCash, transactionType } = payload;
+    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, transactionType } = payload;
     let datas = []; let nameFile; let additional;
 
     if (data === 'inventory') {
@@ -95,14 +95,18 @@ class Report {
         }, 0),
         filter: 'Filter'
       };
-      console.log(datas);
       nameFile = 'inventoryReport.ejs';
     };
     if (data === 'sales') {
+      let listProductData = [];
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
         endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
-        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate, transactionType });
+        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate, transactionType, sku, skuInduk });
+        if (transactionType === 'outcome') {
+          const tempListProduct = await queryProduct.listProduct();
+          listProductData = tempListProduct.data.map(v => Object.assign({}, v));
+        }
         if (findSalesByDate) {
           // return wrapper.error('err', findSalesByDate.message, findSalesByDate.code);
         } else if (findSalesByDate.data.length === 0) {
@@ -148,52 +152,54 @@ class Report {
         datas = findSalesByMerchantId;
       }
       for (const [i, value] of datas.entries()) {
-        const otherPrice = Number(datas[i].pajak) + Number(datas[i].merchant_fee) + Number(datas[i].ongkir) + Number(datas[i].biaya_lain);
-        const received = Number(datas[i].hargaProduct) - (Number(datas[i].hargaProduct) + otherPrice);
-        // let countSalesBySKU = await querySales.countSalesBySKU(value.sku);
-        // if (!countSalesBySKU.err) {
-        //   countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
-        //   datas[i].out = countSalesBySKU[0]['COUNT(*)'];
-        // } else {
-        //   datas[i].out = 0;
-        // }
-        // datas[i].in = Number(value.qty);
-        // datas[i].end_stock = Number(datas[i].in) - Number(datas[i].out);
-        // datas[i].nilai_produk = Number(datas[i].harga_modal) * Number(datas[i].end_stock);
-        datas[i].otherPrice = otherPrice;
-        datas[i].received = received;
+        if (transactionType === 'income') {
+          const otherPrice = Number(datas[i].pajak) + Number(datas[i].merchant_fee) + Number(datas[i].ongkir) + Number(datas[i].biaya_lain);
+          const received = Number(datas[i].hargaProduct) - (Number(datas[i].hargaProduct) + otherPrice);
+          const profit = Number(datas[i].harga_jual) - Number(datas[i].hargaProduct) - Number(datas[i].pajak) - Number(datas[i].ongkir) - Number(datas[i].biaya_lain) - Number(datas[i].merchant_fee);
+          datas[i].otherPrice = otherPrice;
+          datas[i].received = received;
+          datas[i].profit = profit;
+        } else {
+          const totalAllBuy = Number(datas[i].hargaProduct) * Number(datas[i].qty);
+          datas[i].totalAllBuy = totalAllBuy;
+          datas[i].supplierName = listProductData.find(res => res.id === datas[i].product_id).supplierName;
+        }
       }
 
-      // // TODO GET SKU INDUK
-
-      // additional = {
-      //   in: datas.reduce((accumulator, current) => {
-      //     return accumulator + current.qty;
-      //   }, 0),
-      //   out: datas.reduce((accumulator, current) => {
-      //     return accumulator + current.out;
-      //   }, 0),
-      //   end_stock: datas.reduce((accumulator, current) => {
-      //     return accumulator + current.end_stock;
-      //   }, 0),
-      //   harga_modal: datas.reduce((accumulator, current) => {
-      //     return accumulator + current.harga_modal;
-      //   }, 0),
-      //   nilai_produk: datas.reduce((accumulator, current) => {
-      //     return accumulator + current.nilai_produk;
-      //   }, 0),
-      //   filter: 'Filter'
-      // };
       if (transactionType === 'income') {
-        datas = datas.map(res => {
-          if (res.transaction_type === 'income') {
-            res.profit = Number(res.harga_jual) - Number(res.hargaProduct) - Number(res.pajak) - Number(res.ongkir) - Number(res.biaya_lain) - Number(res.merchant_fee);
-          }
-          return res;
-        });
+        additional = {
+          allQty: datas.reduce((accumulator, current) => {
+            return accumulator + Number(current.qty);
+          }, 0),
+          priceSale: datas.reduce((accumulator, current) => {
+            return accumulator + Number(current.harga_jual);
+          }, 0),
+          otherPrice: datas.reduce((accumulator, current) => {
+            const otherPrice = Number(current.pajak) + Number(current.merchant_fee) + Number(current.ongkir) + Number(current.biaya_lain);
+            return accumulator + otherPrice;
+          }, 0),
+          startingPrice: datas.reduce((accumulator, current) => {
+            return accumulator + current.hargaProduct;
+          }, 0),
+          allProfit: datas.reduce((accumulator, current) => {
+            return accumulator + current.profit;
+          }, 0),
+          allReceived: datas.reduce((accumulator, current) => {
+            return accumulator + current.received;
+          }, 0)
+
+        };
+      } else {
+        additional = {
+          allQty: datas.reduce((accumulator, current) => {
+            return accumulator + Number(current.qty);
+          }, 0),
+          totalAllBuy: datas.reduce((accumulator, current) => {
+            return accumulator + current.totalAllBuy;
+          }, 0)
+        };
       }
-      // console.log(datas);
-      nameFile = 'sales.ejs';
+      nameFile = transactionType === 'income' ? 'sales.ejs' : 'outcome.ejs';
     };
     if (data === 'merchant') {
       let findMerchant = await queryMechant.listMerchant();
@@ -227,8 +233,15 @@ class Report {
           // return wrapper.data([], 'Data Not Found', 404);
         }
         findCashByDate = findCashByDate.data.map(v => Object.assign({}, v));
-        datas = typeCash === 'in' ? findCashByDate.filter(res => res.cash_in > 0) : findCashByDate.filter(res => res.cash_out > 0);
-        nameFile = 'inventoryReport.ejs';
+        datas = transactionType === 'income' ? findCashByDate.filter(res => res.cash_in > 0) : findCashByDate.filter(res => res.cash_out > 0);
+
+        additional = {
+          transactionType,
+          totalCash: datas.reduce((accumulator, current) => {
+            return transactionType === 'income' ? accumulator + current.cash_in : accumulator + current.cash_out;
+          }, 0)
+        };
+        nameFile = 'cash.ejs';
       }
     }
 
