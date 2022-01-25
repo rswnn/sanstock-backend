@@ -15,6 +15,8 @@ class Report {
     let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, transactionType } = payload;
     let datas = []; let nameFile; let additional;
 
+    // console.log(data);
+
     if (data === 'inventory') {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
@@ -246,24 +248,44 @@ class Report {
     }
 
     if (data === 'summary') {
-      const findSalesIncome = await querySales.findAllTransaction({ transactionType: 'income' });
-      const findSalesOutcome = await querySales.findAllTransaction({ transactionType: 'outcome' });
-
+      // console.log(payload);
+      const findSalesIncome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'income' });
+      const findSalesOutcome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'outcome' });
+      const findSalesProduct = await queryProduct.listProduct({});
+      console.log(findSalesIncome, 'ini income cuk');
+      console.log(findSalesOutcome, 'ini outcome cuk');
       if (findSalesIncome.err || findSalesOutcome.err) {
         return '[Error]';
       }
       additional = {
-        omset: findSalesIncome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
-          return acc + curr.harga_jual;
+        omset: findSalesIncome.data.reduce((acc, curr) => {
+          return acc + Number(curr.harga_jual);
         }, 0),
-        profit: findSalesIncome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
+        profit: findSalesIncome.data.reduce((acc, curr) => {
           return acc + (Number(curr.harga_jual) - Number(curr.hargaProduct) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
         }, 0),
-        totalOutStock: findSalesOutcome.data.map(v => Object.assign({}, v)).reduce((acc, curr) => {
-          return acc + curr.harga_jual;
+        totalOutStock: findSalesOutcome.data.reduce((acc, curr) => {
+          return acc + Number(curr.harga_jual);
+        }, 0),
+        jumlahNilaiProduk: findSalesProduct.data.reduce((acc, curr) => {
+          return acc + (Number(curr.hargaProduct) * Number(curr.qty));
+        }, 0),
+        stokProduk: findSalesProduct.data.filter((res) => res.qty > 0).reduce((acc, curr) => {
+          return acc + Number(curr.qty);
+        }, 0),
+        jumlahPajak: findSalesIncome.data.reduce((acc, curr) => {
+          return acc + Number(curr.pajak);
+        }, 0),
+        merchantFee: findSalesIncome.data.reduce((acc, curr) => {
+          return acc + Number(curr.merchant_fee);
+        }, 0),
+        biayaLain: findSalesIncome.data.reduce((acc, curr) => {
+          return acc + Number(curr.biaya_lain);
+        }, 0),
+        biayaOngkir: findSalesIncome.data.reduce((acc, curr) => {
+          return acc + Number(curr.ongkir);
         }, 0)
       };
-
       nameFile = 'summary.ejs';
     }
 
