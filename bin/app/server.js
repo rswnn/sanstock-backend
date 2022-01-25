@@ -79,6 +79,7 @@ function AppServer () {
   this.server.get('/masters/v1', jwtAuth.verifyToken, masterHandler.listMaster);
 
   this.server.post('/sales/v1', jwtAuth.verifyToken, saleHandler.addSale);
+  this.server.post('/sales/v1/stock', jwtAuth.verifyToken, saleHandler.addStock);
   this.server.del('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.deleteSale);
   this.server.put('/sales/v1/:id', jwtAuth.verifyToken, saleHandler.updateSale);
 
