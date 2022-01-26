@@ -8,22 +8,14 @@ const findUser = async (param) => {
   return result;
 };
 
-const loginUser = async (param) => {
+const getUsers = async (param) => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT * FROM users WHERE username = "${param.username}" Limit 1`;
-  const result = await db.query(query);
-  return result;
-};
-
-const listUser = async () => {
-  const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = 'SELECT * FROM users ';
+  const query = `SELECT id, username, role FROM users`;
   const result = await db.query(query);
   return result;
 };
 
 module.exports = {
   findUser,
-  loginUser,
-  listUser
+  getUsers
 };

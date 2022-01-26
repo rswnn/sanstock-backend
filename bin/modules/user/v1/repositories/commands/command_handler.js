@@ -12,28 +12,27 @@ const authenticate = async (payload) => {
   return postCommand(payload);
 };
 
+const register = async (payload) => {
+  const user = new User();
+  const postCommand = async payload => user.register(payload);
+  return postCommand(payload);
+};
+
 const updateUser = async (payload) => {
   const user = new User();
   const postCommand = async payload => user.updateUser(payload);
   return postCommand(payload);
 };
 
-const loginUser = async (payload) => {
+const deleteUser = async (payload) => {
   const user = new User();
-  const postCommand = async payload => user.loginUser(payload);
-  return postCommand(payload);
-};
-
-const listUser = async (payload) => {
-  const user = new User();
-  const postCommand = async payload => user.listUser(payload);
+  const postCommand = async payload => user.deleteUser(payload);
   return postCommand(payload);
 };
 
 module.exports = {
   authenticate,
-  addUser,
+  register,
   updateUser,
-  loginUser,
-  listUser
+  deleteUser
 };

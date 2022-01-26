@@ -21,10 +21,10 @@
     </head>
     <body>
         <div style="width: 85%; margin: 0 7.5%;">
-            <h3 style="text-align: center; padding-left: 50px;">Inventory Report</h5>
-            <h5 style="padding-left: 50px;">Date :</h5>
-            <h5 style="padding-left: 50px;"><%= datas.startDate %><%= datas.lastDate ? ` - ${datas.lastDate}` : '' %></h5>
-            <div style="text-align: center; padding-left: 50px;">            
+            <h3 style="text-align: center; padding-left: 50px;">Sales Report</h5>
+                <h5 style="padding-left: 50px;">Date :</h5>
+                <h5 style="padding-left: 50px;"><%= datas.startDate %><%= datas.lastDate ? ` - ${datas.lastDate}` : '' %></h5>
+                <div style="text-align: center; padding-left: 50px;">   
                 <table>
                     <tr>
                         <th>NO</th>
@@ -33,40 +33,31 @@
                         <th>NAMA PRODUK</th>
                         <th>VARIAN</th>
                         <th>SIZE</th>
-                        <th>NAMA SUPPLIER</th>
                         <th>AUTHOR</th>
-                        <th>IN</th>
-                        <th>OUT</th>
-                        <th>END STOCK</th>
-                        <th>HARGA MODAL</th>
-                        <th>NILAI PRODUK</th>
+                        <th>SUPPLIER</th>
+                        <th>QTY</th>
+                        <th>TOTAL PEMBELIAN</th>
                     </tr>
                 <% if (datas.datas.length > 0) { %>
                     <% datas.datas.forEach((datas, i) => {%>
                        <tr>
                            <td><%= i + 1 %></td>
                            <td><%= datas.sku %></td>
-                           <td><%= datas.sku_induk %></td>
+                           <td><%= datas.productsSkuInduk %></td>
                            <td><%= datas.nama_produk %></td>
                            <td><%= datas.varian %></td>
-                           <td><%= datas.size %></td>
-                           <td><%= datas.supplierName %></td>
+                           <td><%= datas.productSize %></td>
                            <td><%= datas.username %></td>
-                           <td><%= datas.in %></td>
-                           <td><%= datas.out %></td>
-                           <td><%= datas.end_stock %></td>
-                           <td><%= datas.harga_modal %></td>
-                           <td><%=datas.nilai_produk %></td>
+                           <td><%= datas.supplierName %></td>
+                           <td><%= datas.qty %></td>
+                           <td><%= datas.totalAllBuy %></td>
                         </tr>
                     <%  });%>
                 <% }%>
                     <tr>
                         <td colspan="8">Total</td>
-                        <td><%= datas.in %></td>
-                        <td><%= datas.out %></td>
-                        <td><%= datas.end_stock %></td>
-                        <td><%= datas.harga_modal %></td>
-                        <td><%= datas.nilai_produk %></td>
+                        <td><%= datas.allQty %></td>
+                        <td><%= datas.totalAllBuy %></td>
                     </tr>
                 </table>
              </div>

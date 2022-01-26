@@ -2,17 +2,32 @@ const Mysql = require('../../../../../infrastructure/databases/mysql/db');
 const configs = require('../../../../../infrastructure/configs/global_config');
 
 const listProduct = async (params) => {
-  const { startDate, endDate } = params;
+  const startDate = params ? params.startDate : null;
+  const endDate = params ? params.endDate : null;
+  let withDate = '';
+
+  if (startDate && endDate) {
+    withDate = `WHERE products.created_at >= '${startDate}' AND products.created_at <= '${endDate}'  + interval 1 DAY ORDER BY products.created_at ASC`;
+  }
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT products.*, suppliers.kode as kodeSup, suppliers.kontak as kontakSupplier, suppliers.nama as supplierName, users.username as username FROM products LEFT OUTER JOIN users ON products.user_id = users.id LEFT OUTER JOIN suppliers ON products.supplier_id = suppliers.id WHERE products.created_at >= '${startDate}' AND products.created_at <= '${endDate}'  + interval 1 DAY ORDER BY products.created_at ASC`;
+  const query = `SELECT products.*, suppliers.kode as kodeSup, suppliers.kontak as kontakSupplier, suppliers.nama as supplierName, users.username as username FROM products LEFT OUTER JOIN users ON products.user_id = users.id LEFT OUTER JOIN suppliers ON products.supplier_id = suppliers.id ${withDate}`;
   const result = await db.query(query);
   return result;
 };
 
 const findProductByDate = async (date) => {
-  const { startDate, endDate } = date;
+  const { startDate, endDate, sku, skuInduk } = date;
+  let tempQuery = '';
+  if (sku && skuInduk) {
+    tempQuery = ` products.sku = '${sku}' AND products.sku_induk = '${skuInduk}' AND`;
+  } else if (sku) {
+    tempQuery = ` products.sku = '${sku}' AND`;
+  } else if (skuInduk) {
+    tempQuery = ` products.sku_induk = '${skuInduk}' AND`;
+  }
+
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT products.*, suppliers.kode as kodeSup, suppliers.kontak as kontakSupplier, suppliers.nama as supplierName, users.username as username FROM products LEFT OUTER JOIN users ON products.user_id = users.id LEFT OUTER JOIN suppliers ON products.supplier_id = suppliers.id WHERE products.created_at >= '${startDate}' AND products.created_at <= '${endDate}'  + interval 1 DAY ORDER BY products.created_at ASC`;
+  const query = `SELECT products.*, suppliers.kode as kodeSup, suppliers.kontak as kontakSupplier, suppliers.nama as supplierName, users.username as username FROM products LEFT OUTER JOIN users ON products.user_id = users.id LEFT OUTER JOIN suppliers ON products.supplier_id = suppliers.id WHERE${tempQuery} products.created_at >= '${startDate}' AND products.created_at <= '${endDate}'  + interval 1 DAY ORDER BY products.created_at ASC`;
   const result = await db.query(query);
   return result;
 };

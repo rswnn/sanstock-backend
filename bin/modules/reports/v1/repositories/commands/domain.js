@@ -12,8 +12,9 @@ const wrapper = require('../../../../../helpers/utils/wrapper');
 
 class Report {
   async generateReport (payload, res) {
-    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, typeCash, transactionType } = payload;
+    let { startDate, endDate, sku, skuInduk, userId, supplierId, merchantId, productId, data, transactionType } = payload;
     let datas = []; let nameFile; let additional;
+    let lastDate = '';
 
     // console.log(data);
 
@@ -21,7 +22,12 @@ class Report {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
         endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
-        let findProductByDate = await queryProduct.findProductByDate({ startDate, endDate });
+        lastDate = endDate;
+        if (moment(startDate).isSame(endDate)) {
+          endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
+          lastDate = '';
+        }
+        let findProductByDate = await queryProduct.findProductByDate({ startDate, endDate, sku, skuInduk });
         if (findProductByDate.err) {
           // return wrapper.error('err', findProductByDate.message, findProductByDate.code);
         } else if (findProductByDate.data.length === 0) {
@@ -95,15 +101,27 @@ class Report {
         nilai_produk: datas.reduce((accumulator, current) => {
           return accumulator + current.nilai_produk;
         }, 0),
+        startDate,
+        lastDate,
         filter: 'Filter'
       };
       nameFile = 'inventoryReport.ejs';
     };
     if (data === 'sales') {
+      let listProductData = [];
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
         endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
-        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate, transactionType });
+        lastDate = endDate;
+        if (moment(startDate).isSame(endDate)) {
+          endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
+          lastDate = '';
+        }
+        let findSalesByDate = await querySales.findSalesByDate({ startDate, endDate, transactionType, sku, skuInduk });
+        if (transactionType === 'outcome') {
+          const tempListProduct = await queryProduct.listProduct();
+          listProductData = tempListProduct.data.map(v => Object.assign({}, v));
+        }
         if (findSalesByDate) {
           // return wrapper.error('err', findSalesByDate.message, findSalesByDate.code);
         } else if (findSalesByDate.data.length === 0) {
@@ -149,46 +167,58 @@ class Report {
         datas = findSalesByMerchantId;
       }
       for (const [i, value] of datas.entries()) {
-        let countSalesBySKU = await querySales.countSalesBySKU(value.sku);
-        if (!countSalesBySKU.err) {
-          countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
-          datas[i].out = countSalesBySKU[0]['COUNT(*)'];
+        if (transactionType === 'income') {
+          const otherPrice = Number(datas[i].pajak) + Number(datas[i].merchant_fee) + Number(datas[i].ongkir) + Number(datas[i].biaya_lain);
+          const received = Number(datas[i].hargaProduct) - (Number(datas[i].hargaProduct) + otherPrice);
+          const profit = Number(datas[i].harga_jual) - Number(datas[i].hargaProduct) - Number(datas[i].pajak) - Number(datas[i].ongkir) - Number(datas[i].biaya_lain) - Number(datas[i].merchant_fee);
+          datas[i].otherPrice = otherPrice;
+          datas[i].received = received;
+          datas[i].profit = profit;
         } else {
-          datas[i].out = 0;
+          const totalAllBuy = Number(datas[i].hargaProduct) * Number(datas[i].qty);
+          datas[i].totalAllBuy = totalAllBuy;
+          datas[i].supplierName = listProductData.find(res => res.id === datas[i].product_id).supplierName;
         }
-        datas[i].in = value.qty;
-        datas[i].end_stock = datas[i].in - datas[i].out;
-        datas[i].nilai_produk = datas[i].harga_modal * datas[i].end_stock;
       }
 
-      additional = {
-        in: datas.reduce((accumulator, current) => {
-          return accumulator + current.qty;
-        }, 0),
-        out: datas.reduce((accumulator, current) => {
-          return accumulator + current.out;
-        }, 0),
-        end_stock: datas.reduce((accumulator, current) => {
-          return accumulator + current.end_stock;
-        }, 0),
-        harga_modal: datas.reduce((accumulator, current) => {
-          return accumulator + current.harga_modal;
-        }, 0),
-        nilai_produk: datas.reduce((accumulator, current) => {
-          return accumulator + current.nilai_produk;
-        }, 0),
-        filter: 'Filter'
-      };
       if (transactionType === 'income') {
-        datas = datas.map(res => {
-          if (res.transaction_type === 'income') {
-            res.profit = Number(res.harga_jual) - Number(res.hargaProduct) - Number(res.pajak) - Number(res.ongkir) - Number(res.biaya_lain) - Number(res.merchant_fee);
-          }
-          return res;
-        });
+        additional = {
+          allQty: datas.reduce((accumulator, current) => {
+            return accumulator + Number(current.qty);
+          }, 0),
+          priceSale: datas.reduce((accumulator, current) => {
+            return accumulator + Number(current.harga_jual);
+          }, 0),
+          otherPrice: datas.reduce((accumulator, current) => {
+            const otherPrice = Number(current.pajak) + Number(current.merchant_fee) + Number(current.ongkir) + Number(current.biaya_lain);
+            return accumulator + otherPrice;
+          }, 0),
+          startingPrice: datas.reduce((accumulator, current) => {
+            return accumulator + current.hargaProduct;
+          }, 0),
+          allProfit: datas.reduce((accumulator, current) => {
+            return accumulator + current.profit;
+          }, 0),
+          allReceived: datas.reduce((accumulator, current) => {
+            return accumulator + current.received;
+          }, 0),
+          startDate,
+          lastDate
+
+        };
+      } else {
+        additional = {
+          allQty: datas.reduce((accumulator, current) => {
+            return accumulator + Number(current.qty);
+          }, 0),
+          totalAllBuy: datas.reduce((accumulator, current) => {
+            return accumulator + current.totalAllBuy;
+          }, 0),
+          startDate,
+          lastDate
+        };
       }
-      // console.log(datas, '===========================');
-      nameFile = 'inventoryReport.ejs';
+      nameFile = transactionType === 'income' ? 'sales.ejs' : 'outcome.ejs';
     };
     if (data === 'merchant') {
       let findMerchant = await queryMechant.listMerchant();
@@ -198,7 +228,7 @@ class Report {
       }
       findMerchant = findMerchant.data.map(v => Object.assign({}, v));
       datas = findMerchant;
-      nameFile = 'inventoryReport.ejs';
+      nameFile = 'merchant.ejs';
     }
     if (data === 'supplier') {
       let findSupplier = await querySupplier.listSupplier();
@@ -208,13 +238,18 @@ class Report {
       }
       findSupplier = findSupplier.data.map(v => Object.assign({}, v));
       datas = findSupplier;
-      nameFile = 'inventoryReport.ejs';
+      nameFile = 'supplier.ejs';
     }
 
     if (data === 'cash') {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
         endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        lastDate = endDate;
+        if (moment(startDate).isSame(endDate)) {
+          endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
+          lastDate = '';
+        }
         let findCashByDate = await queryCashFlow.getCashByDate({ startDate, endDate });
         if (findCashByDate.err) {
           // return wrapper.error('err', findCashByDate.message, findCashByDate.code);
@@ -222,53 +257,68 @@ class Report {
           // return wrapper.data([], 'Data Not Found', 404);
         }
         findCashByDate = findCashByDate.data.map(v => Object.assign({}, v));
-        datas = typeCash === 'in' ? findCashByDate.filter(res => res.cash_in > 0) : findCashByDate.filter(res => res.cash_out > 0);
-        nameFile = 'inventoryReport.ejs';
+        datas = transactionType === 'income' ? findCashByDate.filter(res => res.cash_in > 0) : findCashByDate.filter(res => res.cash_out > 0);
+
+        additional = {
+          transactionType,
+          totalCash: datas.reduce((accumulator, current) => {
+            return transactionType === 'income' ? accumulator + current.cash_in : accumulator + current.cash_out;
+          }, 0),
+          lastDate,
+          endDate
+        };
+        nameFile = 'cash.ejs';
       }
     }
 
     if (data === 'summary') {
-      // console.log(payload);
-      const findSalesIncome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'income' });
-      const findSalesOutcome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'outcome' });
-      const findSalesProduct = await queryProduct.listProduct({});
-      console.log(findSalesIncome, 'ini income cuk');
-      console.log(findSalesOutcome, 'ini outcome cuk');
-      if (findSalesIncome.err || findSalesOutcome.err) {
-        return '[Error]';
+      if (startDate && endDate) {
+        startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        lastDate = endDate;
+        if (moment(startDate).isSame(endDate)) {
+          endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
+          lastDate = '';
+        }
+        const findSalesIncome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'income' });
+        const findSalesOutcome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'outcome' });
+        const findSalesProduct = await queryProduct.listProduct({});
+        if (findSalesIncome.err || findSalesOutcome.err) {
+          return '[Error]';
+        }
+        additional = {
+          omset: findSalesIncome.data.reduce((acc, curr) => {
+            return acc + Number(curr.harga_jual);
+          }, 0),
+          profit: findSalesIncome.data.reduce((acc, curr) => {
+            return acc + (Number(curr.harga_jual) - Number(curr.hargaProduct) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
+          }, 0),
+          totalOutStock: findSalesOutcome.data.reduce((acc, curr) => {
+            return acc + Number(curr.harga_jual);
+          }, 0),
+          jumlahNilaiProduk: findSalesProduct.data.reduce((acc, curr) => {
+            return acc + (Number(curr.hargaProduct) * Number(curr.qty));
+          }, 0),
+          stokProduk: findSalesProduct.data.filter((res) => res.qty > 0).reduce((acc, curr) => {
+            return acc + Number(curr.qty);
+          }, 0),
+          jumlahPajak: findSalesIncome.data.reduce((acc, curr) => {
+            return acc + Number(curr.pajak);
+          }, 0),
+          merchantFee: findSalesIncome.data.reduce((acc, curr) => {
+            return acc + Number(curr.merchant_fee);
+          }, 0),
+          biayaLain: findSalesIncome.data.reduce((acc, curr) => {
+            return acc + Number(curr.biaya_lain);
+          }, 0),
+          biayaOngkir: findSalesIncome.data.reduce((acc, curr) => {
+            return acc + Number(curr.ongkir);
+          }, 0),
+          lastDate,
+          endDate
+        };
+        nameFile = 'summary.ejs';
       }
-      additional = {
-        omset: findSalesIncome.data.reduce((acc, curr) => {
-          return acc + Number(curr.harga_jual);
-        }, 0),
-        profit: findSalesIncome.data.reduce((acc, curr) => {
-          return acc + (Number(curr.harga_jual) - Number(curr.hargaProduct) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
-        }, 0),
-        totalOutStock: findSalesOutcome.data.reduce((acc, curr) => {
-          return acc + Number(curr.harga_jual);
-        }, 0),
-        jumlahNilaiProduk: findSalesProduct.data.reduce((acc, curr) => {
-          return acc + (Number(curr.hargaProduct) * Number(curr.qty));
-        }, 0),
-        stokProduk: findSalesProduct.data.filter((res) => res.qty > 0).reduce((acc, curr) => {
-          return acc + Number(curr.qty);
-        }, 0),
-        jumlahPajak: findSalesIncome.data.reduce((acc, curr) => {
-          return acc + Number(curr.pajak);
-        }, 0),
-        merchantFee: findSalesIncome.data.reduce((acc, curr) => {
-          return acc + Number(curr.merchant_fee);
-        }, 0),
-        biayaLain: findSalesIncome.data.reduce((acc, curr) => {
-          return acc + Number(curr.biaya_lain);
-        }, 0),
-        biayaOngkir: findSalesIncome.data.reduce((acc, curr) => {
-          return acc + Number(curr.ongkir);
-        }, 0)
-
-      };
-      console.log(additional, 'resultttt');
-      nameFile = 'inventoryReport.ejs';
     }
 
     ejs.renderFile(path.join(__dirname, '../../../../../../files', nameFile), { datas: { datas, ...additional } }, (err, data) => {
@@ -290,7 +340,7 @@ class Report {
         //   if (err) return console.log(err);
         //   console.log(res); // { filename: '/app/businesscard.pdf' }
         // });
-        pdf.create(data, options).toStream((err, stream) => {
+        pdf.create(data, options).toStream((_, stream) => {
           stream.pipe(res);
         });
       }
