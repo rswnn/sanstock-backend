@@ -43,6 +43,7 @@ class User {
     user.password = await bcrypt.hash(password, salt);
 
     const insertOneUser = await command.insertOneUser(user);
+    user.id = insertOneUser.data.insertId;
     if (insertOneUser.err) {
       return wrapper.error('err', insertOneUser.message, findUser.code);
     }

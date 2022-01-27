@@ -270,7 +270,6 @@ class Report {
         nameFile = 'cash.ejs';
       }
     }
-
     if (data === 'summary') {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
