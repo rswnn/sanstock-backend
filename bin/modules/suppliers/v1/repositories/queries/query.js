@@ -10,7 +10,7 @@ const getMaxCode = async () => {
 
 const listSupplier = async () => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = 'SELECT * FROM suppliers';
+  const query = 'SELECT suppliers.*, users.username FROM suppliers LEFT OUTER JOIN users ON suppliers.user_id = users.id';
   const result = await db.query(query);
   return result;
 };

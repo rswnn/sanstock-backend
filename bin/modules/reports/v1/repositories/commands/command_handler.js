@@ -7,5 +7,5 @@ const generateReport = async (payload, res) => {
 };
 
 module.exports = {
-    generateReport
+  generateReport
 };

@@ -64,7 +64,38 @@ const verifyToken = async (req, res, next) => {
   next();
 };
 
+const getUser = async (req, res) => {
+  const result = {
+    data: null
+  };
+  const publicKey = fs.readFileSync(config.get('/publicKey'), 'utf8');
+  const verifyOptions = {
+    algorithm: 'RS256',
+    audience: '97b331dh93-4hil3ff-4e83358-9848124-b3aAsd9b9f72c34',
+    issuer: 'sanstock'
+  };
+
+  const token = getToken(req.headers);
+  if (!token) {
+    return wrapper.response(res, 'fail', result, 'Invalid token!', ERROR.FORBIDDEN);
+  }
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(token, publicKey, verifyOptions);
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      return wrapper.response(res, 'fail', result, 'Access token expired!', ERROR.UNAUTHORIZED);
+    }
+    return wrapper.response(res, 'fail', result, 'Token is not valid!', ERROR.UNAUTHORIZED);
+  }
+  const username = decodedToken.sub;
+  const findUser = await userQuery.findUser({ username });
+  const user = await findUser.data.map(v => Object.assign({}, v))[0];
+  return user;
+};
+
 module.exports = {
   generateToken,
-  verifyToken
+  verifyToken,
+  getUser
 };

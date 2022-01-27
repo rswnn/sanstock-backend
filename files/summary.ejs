@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+        table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+        }
+
+        td, th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+        }
+
+        tr:nth-child(even) {
+        background-color: #dddddd;
+        }
+        </style>
+    </head>
+    <body>
+        <div style="width: 85%; margin: 0 7.5%;">
+            <div style="text-align: center; padding-left: 50px;">            
+                <h3>Summary Report</h5>
+                <table>
+                    <tr>
+                        <th>DESKRIPSI</th>
+                        <th>JUMLAH</th>
+                    </tr>
+                    <tr>
+                        <td>Omset</td>
+                        <td>Rp.<%= datas.omset %></td>
+                    </tr>
+                    <tr>
+                        <td>Profit</td>
+                        <td>Rp.<%= datas.profit %></td>
+                    </tr>
+                    <tr>
+                        <td>KUMULASI PEMBELIAN STOK</td>
+                        <td>Rp.<%= datas.totalOutStock %></td>
+                    </tr>
+                    <tr>
+                        <td>JUMLAH NILAI PRODUK</td>
+                        <td>Rp.<%= datas.jumlahNilaiProduk %></td>
+                    </tr>
+                    <tr>
+                        <td>STOK PRODUK</td>
+                        <td>Rp.<%= datas.stokProduk %></td>
+                    </tr>
+                    <tr>
+                        <td>PAJAK</td>
+                        <td>Rp.<%= datas.jumlahPajak %></td>
+                    </tr>
+                    <tr>
+                        <td>MERCHANT FEE</td>
+                        <td>Rp.<%= datas.merchantFee %></td>
+                    </tr>
+                    <tr>
+                        <td>BIAYA LAIN-LAIN</td>
+                        <td>Rp.<%= datas.biayaLain %></td>
+                    </tr>
+                    <tr>
+                        <td>ONGKIR</td>
+                        <td>Rp.<%= datas.biayaOngkir %></td>
+                    </tr>
+                    <tr>
+                        <td>INCOME</td>
+                        <td>Rp.<%= datas.resultCashIn %></td>
+                    </tr>
+                    <tr>
+                        <td>OUTCOME</td>
+                        <td>Rp.<%= datas.resultCashOut %></td>
+                    </tr>
+                    <tr>
+                        <td>KAS SAAT INI</td>
+                        <td>Rp.<%= datas.total %></td>
+                    </tr>
+                </table>
+                <h3>PENJUALAN VIA MERCHANT</h5>
+                <table>
+                        <tr>
+                            <th>DAFTAR MERCHANT</th>
+                            <th>NILAI</th>
+                        </tr>
+                        
+                            <% if (datas.getSalesByMerchant.length > 0) { %>
+                                <% datas.getSalesByMerchant.forEach((datas, i) => {%>
+                                   <tr>
+                                       <td><%= datas.nama %></td>
+                                       <td><%= datas.total %></td>
+                                    </tr>
+                                <%  });%>
+                            <% }%>
+                        
+                </table>
+             </div>
+        </div>
+    </body>
+</html>

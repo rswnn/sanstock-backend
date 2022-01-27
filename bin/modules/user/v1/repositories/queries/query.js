@@ -8,6 +8,14 @@ const findUser = async (param) => {
   return result;
 };
 
+const getUsers = async (param) => {
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = 'SELECT id, username, role FROM users';
+  const result = await db.query(query);
+  return result;
+};
+
 module.exports = {
-  findUser
+  findUser,
+  getUsers
 };

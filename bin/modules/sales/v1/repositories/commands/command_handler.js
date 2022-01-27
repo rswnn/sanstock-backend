@@ -18,8 +18,15 @@ const updateSale = async (payload) => {
   return postCommand(payload);
 };
 
+const addStock = async (payload) => {
+  const sale = new Sale();
+  const postCommand = async payload => sale.addStock(payload);
+  return postCommand(payload);
+};
+
 module.exports = {
   addSale,
   deleteSale,
-  updateSale
+  updateSale,
+  addStock
 };
