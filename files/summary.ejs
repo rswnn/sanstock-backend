@@ -40,6 +40,59 @@
                         <td>KUMULASI PEMBELIAN STOK</td>
                         <td>Rp.<%= datas.totalOutStock %></td>
                     </tr>
+                    <tr>
+                        <td>JUMLAH NILAI PRODUK</td>
+                        <td>Rp.<%= datas.jumlahNilaiProduk %></td>
+                    </tr>
+                    <tr>
+                        <td>STOK PRODUK</td>
+                        <td>Rp.<%= datas.stokProduk %></td>
+                    </tr>
+                    <tr>
+                        <td>PAJAK</td>
+                        <td>Rp.<%= datas.jumlahPajak %></td>
+                    </tr>
+                    <tr>
+                        <td>MERCHANT FEE</td>
+                        <td>Rp.<%= datas.merchantFee %></td>
+                    </tr>
+                    <tr>
+                        <td>BIAYA LAIN-LAIN</td>
+                        <td>Rp.<%= datas.biayaLain %></td>
+                    </tr>
+                    <tr>
+                        <td>ONGKIR</td>
+                        <td>Rp.<%= datas.biayaOngkir %></td>
+                    </tr>
+                    <tr>
+                        <td>INCOME</td>
+                        <td>Rp.<%= datas.resultCashIn %></td>
+                    </tr>
+                    <tr>
+                        <td>OUTCOME</td>
+                        <td>Rp.<%= datas.resultCashOut %></td>
+                    </tr>
+                    <tr>
+                        <td>KAS SAAT INI</td>
+                        <td>Rp.<%= datas.total %></td>
+                    </tr>
+                </table>
+                <h3>PENJUALAN VIA MERCHANT</h5>
+                <table>
+                        <tr>
+                            <th>DAFTAR MERCHANT</th>
+                            <th>NILAI</th>
+                        </tr>
+                        
+                            <% if (datas.getSalesByMerchant.length > 0) { %>
+                                <% datas.getSalesByMerchant.forEach((datas, i) => {%>
+                                   <tr>
+                                       <td><%= datas.nama %></td>
+                                       <td><%= datas.total %></td>
+                                    </tr>
+                                <%  });%>
+                            <% }%>
+                        
                 </table>
              </div>
         </div>

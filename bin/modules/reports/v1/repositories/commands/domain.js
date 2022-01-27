@@ -8,6 +8,7 @@ const querySales = require('../../../../sales/v1/repositories/queries/query');
 const queryMechant = require('../../../../merchants/v1/repositories/queries/query');
 const querySupplier = require('../../../../suppliers/v1/repositories/queries/query');
 const queryCashFlow = require('../../../../cash_flow/v1/repositories/queries/query');
+// const CashFlow = require('../../../../cash_flow/v1/repositories/queries/domain');
 const wrapper = require('../../../../../helpers/utils/wrapper');
 
 class Report {
@@ -282,21 +283,31 @@ class Report {
         const findSalesIncome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'income' });
         const findSalesOutcome = await querySales.findAllTransaction({ startDate, endDate, transactionType: 'outcome' });
         const findSalesProduct = await queryProduct.listProduct({});
+        const getBalance = await queryCashFlow.getBalance();
+        const getListMerchant = await queryMechant.listMerchant();
         if (findSalesIncome.err || findSalesOutcome.err) {
           return '[Error]';
         }
+
+        const getSalesByMerchant = getListMerchant.data.map(res => {
+          res.total = findSalesIncome.data.filter((sales) => sales.merchant_id === res.id).reduce((acc, curr) => {
+            return acc + Number(curr.harga_jual);
+          }, 0);
+          return res;
+        });
+
         additional = {
           omset: findSalesIncome.data.reduce((acc, curr) => {
             return acc + Number(curr.harga_jual);
           }, 0),
           profit: findSalesIncome.data.reduce((acc, curr) => {
-            return acc + (Number(curr.harga_jual) - Number(curr.hargaProduct) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
+            return acc + (Number(curr.harga_jual) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
           }, 0),
           totalOutStock: findSalesOutcome.data.reduce((acc, curr) => {
             return acc + Number(curr.harga_jual);
           }, 0),
           jumlahNilaiProduk: findSalesProduct.data.reduce((acc, curr) => {
-            return acc + (Number(curr.hargaProduct) * Number(curr.qty));
+            return acc + (Number(curr.harga_modal) * Number(curr.qty));
           }, 0),
           stokProduk: findSalesProduct.data.filter((res) => res.qty > 0).reduce((acc, curr) => {
             return acc + Number(curr.qty);
@@ -313,6 +324,10 @@ class Report {
           biayaOngkir: findSalesIncome.data.reduce((acc, curr) => {
             return acc + Number(curr.ongkir);
           }, 0),
+          resultCashIn: getBalance.resultCashIn.data[0].allCashIn,
+          resultCashOut: getBalance.resultCashOut.data[0].allCashOut,
+          total: getBalance.resultCashIn.data[0].allCashIn - getBalance.resultCashOut.data[0].allCashOut,
+          getSalesByMerchant,
           lastDate,
           endDate
         };
