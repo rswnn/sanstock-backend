@@ -5,7 +5,7 @@ const addProduct = joi.object({
   skuInduk: joi.string().required(),
   namaProduk: joi.string().required(),
   varian: joi.string().required(),
-  size: joi.number().required(),
+  size: joi.string().optional(),
   qty: joi.number().default(0),
   hargaModal: joi.number().required(),
   userId: joi.number().required(),

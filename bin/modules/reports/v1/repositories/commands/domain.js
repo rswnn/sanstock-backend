@@ -74,7 +74,7 @@ class Report {
         datas = findByProductBySupplierId;
       }
       for (const [i, value] of datas.entries()) {
-        let countSalesBySKU = await querySales.countSalesBySKU(value.sku);
+        let countSalesBySKU = await querySales.countSalesBySKU(value.id);
         if (!countSalesBySKU.err) {
           countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
           datas[i].out = countSalesBySKU[0]['COUNT(*)'];
@@ -170,7 +170,7 @@ class Report {
       for (const [i, value] of datas.entries()) {
         if (transactionType === 'income') {
           const otherPrice = Number(datas[i].pajak) + Number(datas[i].merchant_fee) + Number(datas[i].ongkir) + Number(datas[i].biaya_lain);
-          const received = Number(datas[i].hargaProduct) - (Number(datas[i].hargaProduct) + otherPrice);
+          const received = Number(datas[i].harga_jual) - otherPrice;
           const profit = Number(datas[i].harga_jual) - Number(datas[i].hargaProduct) - Number(datas[i].pajak) - Number(datas[i].ongkir) - Number(datas[i].biaya_lain) - Number(datas[i].merchant_fee);
           datas[i].otherPrice = otherPrice;
           datas[i].received = received;
