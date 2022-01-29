@@ -74,15 +74,17 @@ class Report {
         datas = findByProductBySupplierId;
       }
       for (const [i, value] of datas.entries()) {
-        let countSalesBySKU = await querySales.countSalesBySKU(value.id);
+        let countSalesBySKU = await querySales.countSalesOut(value.id);
         if (!countSalesBySKU.err) {
-          countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v));
-          datas[i].out = countSalesBySKU[0]['COUNT(*)'];
+          countSalesBySKU = countSalesBySKU.data.map(v => Object.assign({}, v)).reduce((accumulator, current) => {
+            return accumulator + Number(current.qty);
+          }, 0);
+          datas[i].out = countSalesBySKU;
         } else {
           datas[i].out = 0;
         }
         datas[i].in = value.qty;
-        datas[i].end_stock = datas[i].in - datas[i].out;
+        datas[i].end_stock = value.qty;
         datas[i].nilai_produk = datas[i].harga_modal * datas[i].end_stock;
       }
 
@@ -265,10 +267,11 @@ class Report {
           totalCash: datas.reduce((accumulator, current) => {
             return transactionType === 'income' ? accumulator + current.cash_in : accumulator + current.cash_out;
           }, 0),
-          lastDate,
-          endDate
+          startDate,
+          lastDate
         };
         nameFile = 'cash.ejs';
+        console.log(datas, additional)
       }
     }
     if (data === 'summary') {
@@ -328,8 +331,8 @@ class Report {
           resultCashOut: getBalance.resultCashOut.data[0].allCashOut,
           total: getBalance.resultCashIn.data[0].allCashIn - getBalance.resultCashOut.data[0].allCashOut,
           getSalesByMerchant,
-          lastDate,
-          endDate
+          startDate,
+          lastDate
         };
         nameFile = 'summary.ejs';
       }

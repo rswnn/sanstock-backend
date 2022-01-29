@@ -23,9 +23,9 @@ const getBalance = async () => {
 };
 
 const getCashByDate = async (params) => {
-  const { startDate, type = 0, typeCash } = params;
+  const { startDate, type = 0, typeCash, endDate } = params;
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT * from cash_flow WHERE cash_flow.type = '${type}' AND cash_flow.cash_in >= '${typeCash}' AND cash_flow.cash_out >= '${typeCash}' AND cash_flow.created_at >= '${startDate}' AND cash_flow.created_at <= '${startDate}' + interval 1 DAY ORDER BY created_at ASC`;
+  const query = `SELECT * from cash_flow WHERE cash_flow.type = '${type}' AND cash_flow.created_at >= '${startDate}' AND cash_flow.created_at <= '${endDate}' + interval 1 DAY ORDER BY created_at ASC`;
   const result = await db.query(query);
   return result;
 };

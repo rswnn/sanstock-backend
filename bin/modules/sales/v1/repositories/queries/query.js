@@ -10,10 +10,17 @@ const listSale = async () => {
 
 const countSalesBySKU = async (sku) => {
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT COUNT(*) FROM sales LEFT JOIN users ON user_id = users.id LEFT JOIN products ON product_id = products.id LEFT JOIN merchants ON merchant_id = merchants.id WHERE sku = '${sku}' AND transaction_type = 'outcome' `;
+  const query = `SELECT COUNT(*) FROM sales LEFT JOIN users ON user_id = users.id LEFT JOIN products ON product_id = products.id LEFT JOIN merchants ON merchant_id = merchants.id WHERE sales.product_id = '${sku}' AND transaction_type = 'outcome' `;
   const result = await db.query(query);
   return result;
 };
+
+const countSalesOut = async (id) => {
+  const db = new Mysql(configs.get('/mysqlConfig'));
+  const query = `SELECT qty from sales where product_id = '${id}' AND transaction_type = 'income'`;
+  const result = await db.query(query);
+  return result;
+}
 
 const findSalesByDate = async (date) => {
   const { startDate, endDate, transactionType, sku, skuInduk } = date;
@@ -80,5 +87,6 @@ module.exports = {
   findSalesByProductId,
   findSalesByUserId,
   findSalesByMerchantId,
-  findAllTransaction
+  findAllTransaction,
+  countSalesOut
 };
