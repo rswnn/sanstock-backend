@@ -22,7 +22,7 @@ class Report {
     if (data === 'inventory') {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
-        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).add(5, 'minutes').startOf('day').format('YYYY-MM-DD');
         lastDate = endDate;
         if (moment(startDate).isSame(endDate)) {
           endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
@@ -114,7 +114,7 @@ class Report {
       let listProductData = [];
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
-        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).add(5, 'minutes').startOf('day').format('YYYY-MM-DD');
         lastDate = endDate;
         if (moment(startDate).isSame(endDate)) {
           endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
@@ -247,7 +247,7 @@ class Report {
     if (data === 'cash') {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
-        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).add(5, 'minutes').startOf('day').format('YYYY-MM-DD');
         lastDate = endDate;
         if (moment(startDate).isSame(endDate)) {
           endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
@@ -271,13 +271,13 @@ class Report {
           lastDate
         };
         nameFile = 'cash.ejs';
-        console.log(datas, additional)
+        console.log(datas, additional);
       }
     }
     if (data === 'summary') {
       if (startDate && endDate) {
         startDate = moment(startDate).startOf('day').format('YYYY-MM-DD');
-        endDate = moment(endDate).startOf('day').format('YYYY-MM-DD');
+        endDate = moment(endDate).add(5, 'minutes').startOf('day').format('YYYY-MM-DD');
         lastDate = endDate;
         if (moment(startDate).isSame(endDate)) {
           endDate = moment(endDate).add(1, 'day').startOf('day').format('YYYY-MM-DD');
@@ -304,7 +304,7 @@ class Report {
             return acc + Number(curr.harga_jual);
           }, 0),
           profit: findSalesIncome.data.reduce((acc, curr) => {
-            return acc + (Number(curr.harga_jual) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
+            return acc + (Number(curr.harga_jual) - Number(curr.hargaModal) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
           }, 0),
           totalOutStock: findSalesOutcome.data.reduce((acc, curr) => {
             return acc + Number(curr.harga_jual);
@@ -334,6 +334,7 @@ class Report {
           startDate,
           lastDate
         };
+        console.log(additional);
         nameFile = 'summary.ejs';
       }
     }

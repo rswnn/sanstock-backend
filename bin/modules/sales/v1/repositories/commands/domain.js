@@ -6,7 +6,7 @@ moment.tz('Asia/Jakarta');
 
 class Sale {
   async addSale (payload) {
-    payload.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    payload.createdAt = moment().set({ hour: 0, minute: 0, second: 0 }).format('YYYY-MM-DD HH:mm:ss');
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
     payload.transcationType = 'income';
     const insertSale = await command.insertSale(payload);
@@ -47,7 +47,7 @@ class Sale {
   }
 
   async addStock (payload) {
-    payload.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    payload.createdAt = moment().set({ hour: 0, minute: 0, second: 0 }).format('YYYY-MM-DD HH:mm:ss');
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
     payload.transcationType = 'outcome';
     payload.hargaJual = payload.hargaModal * payload.qty;

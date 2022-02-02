@@ -5,7 +5,7 @@ moment.tz('Asia/Jakarta');
 
 class Product {
   async addProduct (payload) {
-    payload.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    payload.createdAt = moment().set({ hour: 0, minute: 0, second: 0 }).format('YYYY-MM-DD HH:mm:ss');
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
     const insertOneProduct = await command.insertOneProduct(payload);
     if (insertOneProduct.err) {

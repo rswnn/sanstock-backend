@@ -9,8 +9,6 @@ class Master {
     const listMerchant = await queryMerchant.listMerchant();
     if (listMerchant.err) {
       return wrapper.error('err', listMerchant.message, listMerchant.code);
-    } else if (listMerchant.data.length === 0) {
-      return wrapper.data([], 'Data Not Found', 404);
     }
 
     if (listMerchant.data.length > 0) {

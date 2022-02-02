@@ -5,7 +5,7 @@ moment.tz('Asia/Jakarta');
 
 class Sale {
   async addSale (payload) {
-    payload.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    payload.createdAt = moment().set({ hour: 0, minute: 0, second: 0 }).format('YYYY-MM-DD HH:mm:ss');
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
     const insertSale = await command.insertSale(payload);
     if (insertSale.err) {
@@ -23,7 +23,7 @@ class Sale {
   }
 
   async updateSale (payload) {
-    payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    payload.updatedAt = moment().set({ hour: 0, minute: 0, second: 0 }).format('YYYY-MM-DD HH:mm:ss');
     const updateSale = await command.updateSale(payload);
     if (updateSale.err) {
       return wrapper.error('err', updateSale.message, updateSale.code);

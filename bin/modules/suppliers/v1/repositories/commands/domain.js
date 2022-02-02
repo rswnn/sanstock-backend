@@ -11,7 +11,7 @@ class Supplier {
       return wrapper.error('err', autoCodeGeneration.message, autoCodeGeneration.code);
     }
     payload.kode = autoCodeGeneration.data;
-    payload.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
+    payload.createdAt = moment().set({ hour: 0, minute: 0, second: 0 }).format('YYYY-MM-DD HH:mm:ss');
     payload.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
     const insertSupplier = await command.insertSupplier(payload);
     if (insertSupplier.err) {

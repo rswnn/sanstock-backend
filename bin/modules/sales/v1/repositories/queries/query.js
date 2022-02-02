@@ -20,7 +20,7 @@ const countSalesOut = async (id) => {
   const query = `SELECT qty from sales where product_id = '${id}' AND transaction_type = 'income'`;
   const result = await db.query(query);
   return result;
-}
+};
 
 const findSalesByDate = async (date) => {
   const { startDate, endDate, transactionType, sku, skuInduk } = date;
@@ -73,7 +73,7 @@ const findSalesByMerchantId = async (params) => {
 const findAllTransaction = async (params) => {
   const { transactionType, startDate, endDate } = params;
   const db = new Mysql(configs.get('/mysqlConfig'));
-  const query = `SELECT sales.*, users.username as username, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant, products.id as productId FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.created_at >= '${startDate}' AND sales.created_at <= '${endDate}' AND sales.transaction_type ='${transactionType}'`;
+  const query = `SELECT sales.*, users.username as username, merchants.kode as kodeMerchant, merchants.nama as namaMerchant, merchants.email as emailMerhcant, merchants.kontak as kontakMerchant, products.id as productId, products.harga_modal as hargaModal FROM sales LEFT OUTER JOIN users ON sales.user_id = users.id LEFT OUTER JOIN products ON sales.product_id = products.id LEFT OUTER JOIN merchants ON sales.merchant_id = merchants.id WHERE sales.created_at >= '${startDate}' AND sales.created_at <= '${endDate}' AND sales.transaction_type ='${transactionType}'`;
   // console.log(db);
   const result = await db.query(query);
   return result;
