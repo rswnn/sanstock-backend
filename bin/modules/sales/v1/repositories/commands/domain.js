@@ -18,11 +18,10 @@ class Sale {
     payload.salesId = insertId.insertId;
     payload.dateTime = payload.createdAt;
     payload.type = '1';
-    payload.cashIn = payload.hargaJual * payload.qty;
+    payload.cashIn = (payload.hargaJual * payload.qty) - Number(payload.pajak) - Number(payload.merchantFee) - Number(payload.biayaLain) - Number(payload.ongkir);
     payload.cashOut = 0;
     payload.description = 'Tambah Income';
     const insertCashFlow = await commandCashFLow.insertCashFromAddSale(payload);
-    payload.cashIn = payload.cashIn - Number(payload.pajak) -Number( payload.merchantFee) - Number(payload.biayaLain) - Number(payload.ongkir)
     const updateStockAfterSale = await command.updateStockAfterSale({ ...payload, id: payload.productId });
     if (insertCashFlow.err || updateStockAfterSale.err) {
       return wrapper.error('err', insertCashFlow.message, insertCashFlow.code);

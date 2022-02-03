@@ -172,8 +172,10 @@ class Report {
       for (const [i, value] of datas.entries()) {
         if (transactionType === 'income') {
           const otherPrice = Number(datas[i].pajak) + Number(datas[i].merchant_fee) + Number(datas[i].ongkir) + Number(datas[i].biaya_lain);
-          const received = Number(datas[i].harga_jual) - otherPrice;
-          const profit = Number(datas[i].harga_jual) - Number(datas[i].hargaProduct) - Number(datas[i].pajak) - Number(datas[i].ongkir) - Number(datas[i].biaya_lain) - Number(datas[i].merchant_fee);
+          const hargaProduct = Number(datas[i].hargaProduct) * Number(datas[i].qty);
+          const hargaJual = Number(datas[i].harga_jual) * Number(datas[i].qty);
+          const received = hargaJual - otherPrice;
+          const profit = hargaJual - (hargaProduct + otherPrice);
           datas[i].otherPrice = otherPrice;
           datas[i].received = received;
           datas[i].profit = profit;
@@ -294,7 +296,7 @@ class Report {
 
         const getSalesByMerchant = getListMerchant.data.map(res => {
           res.total = findSalesIncome.data.filter((sales) => sales.merchant_id === res.id).reduce((acc, curr) => {
-            return acc + Number(curr.harga_jual);
+            return acc + (Number(curr.harga_jual) * Number(curr.qty));
           }, 0);
           return res;
         });

@@ -46,7 +46,7 @@
                     </tr>
                     <tr>
                         <td>STOK PRODUK</td>
-                        <td>Rp.<%= datas.stokProduk %></td>
+                        <td><%= datas.stokProduk %></td>
                     </tr>
                     <tr>
                         <td>PAJAK</td>
@@ -65,11 +65,11 @@
                         <td>Rp.<%= datas.biayaOngkir %></td>
                     </tr>
                     <tr>
-                        <td>INCOME</td>
+                        <td>NILAI PEMASUKAN</td>
                         <td>Rp.<%= datas.resultCashIn %></td>
                     </tr>
                     <tr>
-                        <td>OUTCOME</td>
+                        <td>NILAI PENGELUARAN</td>
                         <td>Rp.<%= datas.resultCashOut %></td>
                     </tr>
                     <tr>
@@ -88,7 +88,7 @@
                                 <% datas.getSalesByMerchant.forEach((datas, i) => {%>
                                    <tr>
                                        <td><%= datas.nama %></td>
-                                       <td><%= datas.total %></td>
+                                       <td>Rp.<%= datas.total %></td>
                                     </tr>
                                 <%  });%>
                             <% }%>
