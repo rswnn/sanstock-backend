@@ -301,10 +301,10 @@ class Report {
 
         additional = {
           omset: findSalesIncome.data.reduce((acc, curr) => {
-            return acc + Number(curr.harga_jual);
+            return acc + (Number(curr.harga_jual) * Number(curr.qty));
           }, 0),
           profit: findSalesIncome.data.reduce((acc, curr) => {
-            return acc + (Number(curr.harga_jual) - Number(curr.hargaModal) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
+            return acc + ((Number(curr.harga_jual) * Number(curr.qty)) - (Number(curr.hargaModal) * Number(curr.qty)) - Number(curr.pajak) - Number(curr.ongkir) - Number(curr.biaya_lain) - Number(curr.merchant_fee));
           }, 0),
           totalOutStock: findSalesOutcome.data.reduce((acc, curr) => {
             return acc + Number(curr.harga_jual);
